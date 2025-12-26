@@ -3,23 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Examify | Exam Explorer</title>
+<title>Examify | Smarter Exam Tracking</title>
 
 <style>
 body{
   font-family:Poppins,sans-serif;
   margin:0;
-  background:linear-gradient(to bottom right,#ffe4b3,#ffd6cc);
+  background:linear-gradient(to bottom right,#fff1c1,#ffd6cc);
 }
 
 /* HEADER */
 header{
-  background:linear-gradient(90deg,#ff0000,#ffcc00);
+  background:linear-gradient(120deg,#ff512f,#f09819);
   color:white;
   text-align:center;
-  padding:20px;
-  font-size:2rem;
-  font-weight:bold;
+  padding:30px 15px;
+}
+header h1{
+  margin:0;
+  font-size:2.4rem;
+  letter-spacing:1px;
+}
+header p{
+  margin-top:8px;
+  font-size:1.1rem;
+  opacity:0.95;
 }
 
 /* ALERT BAR */
@@ -38,62 +46,56 @@ header{
   cursor:pointer;
 }
 
-/* QUOTE */
-.quote{
-  text-align:center;
-  font-style:italic;
-  font-weight:600;
-  color:#b30000;
-  margin:10px 0 20px;
-}
-
 /* FILTER BAR */
 .filter-bar{
   display:flex;
   gap:10px;
-  padding:10px 20px;
+  padding:15px 20px;
   flex-wrap:wrap;
+  justify-content:center;
 }
 select,input{
-  padding:8px 12px;
-  border-radius:8px;
-  border:2px solid #ffcc00;
+  padding:10px 14px;
+  border-radius:10px;
+  border:2px solid #f59e0b;
   font-weight:600;
+  font-size:0.95rem;
 }
 
 /* GRID */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:20px;
-  padding:20px 40px 60px;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:22px;
+  padding:20px 40px;
 }
 
 /* CARD */
 .card{
   background:white;
-  border-radius:16px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  border-radius:18px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.1);
   text-align:center;
-  padding:20px;
+  padding:22px;
   transition:0.25s;
 }
 .card:hover{
   transform:translateY(-6px);
-  box-shadow:0 8px 20px rgba(255,0,0,0.3);
+  box-shadow:0 10px 22px rgba(255,81,47,0.35);
 }
 
 .logo{
-  width:70px;
-  height:70px;
+  width:72px;
+  height:72px;
   object-fit:contain;
+  margin-bottom:10px;
 }
 
-/* STATUS BADGE */
+/* STATUS */
 .status{
   font-size:0.75rem;
-  padding:4px 8px;
-  border-radius:6px;
+  padding:5px 10px;
+  border-radius:20px;
   font-weight:bold;
   display:inline-block;
   margin-bottom:8px;
@@ -103,7 +105,7 @@ select,input{
 .closed{background:#ef4444;color:white;}
 
 .exam-name{
-  font-size:1.2rem;
+  font-size:1.25rem;
   font-weight:600;
 }
 .category{
@@ -111,15 +113,53 @@ select,input{
   color:#6b7280;
 }
 
-/* BUTTON */
+/* BUTTONS */
 .button{
   display:inline-block;
   margin-top:12px;
-  background:linear-gradient(90deg,#ff0000,#ffcc00);
+  background:linear-gradient(90deg,#ff512f,#f09819);
   color:white;
-  padding:8px 14px;
-  border-radius:8px;
+  padding:9px 16px;
+  border-radius:10px;
   text-decoration:none;
+  font-weight:600;
+  border:none;
+  cursor:pointer;
+}
+
+/* MY EXAMS */
+#myExams{
+  background:white;
+  margin:30px;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 8px 18px rgba(0,0,0,0.1);
+}
+#myExams h2{
+  margin-top:0;
+  color:#b30000;
+}
+.progress{
+  background:#e5e7eb;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.progress-bar{
+  height:10px;
+  background:#22c55e;
+  width:0%;
+}
+.myexam{
+  margin-bottom:18px;
+}
+.small-btn{
+  margin-top:6px;
+  padding:6px 12px;
+  border-radius:8px;
+  border:none;
+  background:#fde68a;
+  cursor:pointer;
   font-weight:600;
 }
 </style>
@@ -127,74 +167,132 @@ select,input{
 
 <body>
 
-<header>🎓 Examify – Exam Explorer</header>
+<header>
+  <h1>Examify</h1>
+  <p>Track exams. Monitor registrations. Stay ahead.</p>
+</header>
 
 <div id="alertBar">
-🚨 JEE Main 2026 registration closing soon!
+🚨 JEE Main registration closing soon — don’t miss it!
 <span onclick="closeAlert()">✖</span>
 </div>
-
-<div class="quote">"Patience = Success"</div>
 
 <div class="filter-bar">
 <select id="category" onchange="filterExams()">
   <option value="all">All Categories</option>
   <option value="engineering">Engineering</option>
   <option value="medical">Medical</option>
-  <option value="both">Both</option>
-  <option value="others">Others</option>
 </select>
-
 <input type="text" id="searchInput" placeholder="Search exam..." onkeyup="searchExam()">
 </div>
 
-<div class="grid" id="examGrid">
+<div class="grid">
 
-<div class="card" data-category="engineering">
-  <div class="status open">OPEN</div>
+<div class="card" data-category="engineering" data-start="2025-12-01" data-end="2026-01-15">
+  <div class="status"></div>
   <img src="jee-main.jpg" class="logo">
   <div class="exam-name">JEE Main</div>
   <div class="category">Engineering</div>
-  <a href="jee-main2.html" class="button">View Details</a>
+  <button class="button" onclick="addToMyExams('JEE Main')">Add to My Exams</button>
 </div>
 
-<div class="card" data-category="engineering">
-  <div class="status upcoming">UPCOMING</div>
+<div class="card" data-category="engineering" data-start="2026-04-01" data-end="2026-04-30">
+  <div class="status"></div>
   <img src="jee-advanced.png" class="logo">
   <div class="exam-name">JEE Advanced</div>
   <div class="category">Engineering</div>
-  <a href="jee-adv.html" class="button">View Details</a>
+  <button class="button" onclick="addToMyExams('JEE Advanced')">Add to My Exams</button>
 </div>
 
-<div class="card" data-category="medical">
-  <div class="status open">OPEN</div>
+<div class="card" data-category="medical" data-start="2025-02-01" data-end="2025-03-10">
+  <div class="status"></div>
   <img src="neet.jpg" class="logo">
   <div class="exam-name">NEET UG</div>
   <div class="category">Medical</div>
-  <a href="neet.html" class="button">View Details</a>
+  <button class="button" onclick="addToMyExams('NEET UG')">Add to My Exams</button>
 </div>
 
 </div>
+
+<section id="myExams">
+  <h2>📌 My Exams</h2>
+  <div id="myExamList"></div>
+</section>
 
 <script>
 function closeAlert(){
   document.getElementById("alertBar").style.display="none";
 }
 
+/* STATUS LOGIC */
+function updateExamStatus(){
+  const today=new Date();
+  document.querySelectorAll(".card").forEach(card=>{
+    const start=new Date(card.dataset.start);
+    const end=new Date(card.dataset.end);
+    const status=card.querySelector(".status");
+    if(today<start){
+      status.innerText="UPCOMING";
+      status.className="status upcoming";
+    }else if(today>=start && today<=end){
+      status.innerText="OPEN";
+      status.className="status open";
+    }else{
+      status.innerText="CLOSED";
+      status.className="status closed";
+    }
+  });
+}
+updateExamStatus();
+
+/* FILTER + SEARCH */
 function filterExams(){
   const cat=document.getElementById("category").value;
-  document.querySelectorAll(".card").forEach(card=>{
-    card.style.display=(cat==="all"||card.dataset.category===cat||card.dataset.category==="both"&&cat==="both")?"block":"none";
+  document.querySelectorAll(".card").forEach(c=>{
+    c.style.display=(cat==="all"||c.dataset.category===cat)?"block":"none";
+  });
+}
+function searchExam(){
+  const q=document.getElementById("searchInput").value.toLowerCase();
+  document.querySelectorAll(".card").forEach(c=>{
+    const name=c.querySelector(".exam-name").innerText.toLowerCase();
+    c.style.display=name.includes(q)?"block":"none";
   });
 }
 
-function searchExam(){
-  const q=document.getElementById("searchInput").value.toLowerCase();
-  document.querySelectorAll(".card").forEach(card=>{
-    const name=card.querySelector(".exam-name").innerText.toLowerCase();
-    card.style.display=name.includes(q)?"block":"none";
-  });
+/* MY EXAMS */
+let myExams=JSON.parse(localStorage.getItem("myExams"))||{};
+
+function addToMyExams(exam){
+  if(!myExams[exam]){
+    myExams[exam]=0;
+    localStorage.setItem("myExams",JSON.stringify(myExams));
+    renderMyExams();
+  }
 }
+
+function updateProgress(exam){
+  myExams[exam]=Math.min(100,myExams[exam]+25);
+  localStorage.setItem("myExams",JSON.stringify(myExams));
+  renderMyExams();
+}
+
+function renderMyExams(){
+  const box=document.getElementById("myExamList");
+  box.innerHTML="";
+  for(let exam in myExams){
+    box.innerHTML+=`
+      <div class="myexam">
+        <strong>${exam}</strong> – ${myExams[exam]}%
+        <div class="progress">
+          <div class="progress-bar" style="width:${myExams[exam]}%"></div>
+        </div>
+        <button class="small-btn" onclick="updateProgress('${exam}')">+25% completed</button>
+      </div>
+    `;
+  }
+}
+renderMyExams();
 </script>
 
 </body>
