@@ -3,141 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Examify | Smart Exam Tracker</title>
+<title>Examify</title>
 
 <style>
+:root{
+  --primary:#ff6a00;
+  --secondary:#ffd6a5;
+  --bg:#fff7ed;
+  --card:#ffffffcc;
+  --text:#1f2937;
+}
+body.dark{
+  --bg:#0f172a;
+  --card:#1e293bcc;
+  --text:#e5e7eb;
+}
+*{box-sizing:border-box}
 body{
-  font-family:Poppins,sans-serif;
   margin:0;
-  background:linear-gradient(to bottom right,#fff1c1,#ffd6cc);
+  font-family:Poppins,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:0.3s;
 }
 
 /* HEADER */
 header{
   background:linear-gradient(120deg,#ff512f,#f09819);
+  padding:28px;
   color:white;
   text-align:center;
-  padding:26px 15px;
-  position:relative;
 }
-header h1{margin:0;font-size:2.3rem;}
-header p{margin-top:6px;font-size:1.05rem;}
+header h1{margin:0;font-size:2.6rem}
+header p{opacity:0.9}
 
-#myExamBtn{
-  position:absolute;
-  right:20px;
-  top:20px;
-  background:white;
-  color:#b30000;
-  border:none;
-  padding:8px 16px;
-  border-radius:20px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-/* ALERT */
-#alertBar{
-  background:#b30000;
-  color:white;
-  text-align:center;
-  padding:10px;
-  font-weight:600;
+/* TOP BAR */
+.topbar{
   position:sticky;
   top:0;
-  z-index:999;
-}
-
-/* FILTER */
-.filter-bar{
+  backdrop-filter:blur(14px);
+  background:rgba(255,255,255,0.75);
   display:flex;
-  gap:10px;
-  padding:15px;
   justify-content:center;
-  flex-wrap:wrap;
+  gap:12px;
+  padding:14px;
+  z-index:99;
 }
-select,input{
-  padding:10px 14px;
-  border-radius:10px;
-  border:2px solid #f59e0b;
+body.dark .topbar{background:rgba(15,23,42,0.8)}
+.topbar input{
+  padding:12px 18px;
+  border-radius:30px;
+  border:none;
+  width:260px;
   font-weight:600;
+}
+.pill{
+  padding:10px 16px;
+  border-radius:30px;
+  background:white;
+  border:2px solid var(--primary);
+  cursor:pointer;
+  font-weight:600;
+}
+.pill.active{
+  background:linear-gradient(90deg,#ff512f,#f09819);
+  color:white;
 }
 
 /* GRID */
 .grid{
+  padding:35px;
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:22px;
-  padding:20px 40px;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:28px;
 }
 
 /* CARD */
 .card{
-  background:white;
-  border-radius:18px;
-  box-shadow:0 6px 15px rgba(0,0,0,0.1);
+  background:var(--card);
+  backdrop-filter:blur(14px);
+  border-radius:24px;
+  padding:26px;
   text-align:center;
-  padding:22px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.15);
+  transition:0.35s;
 }
-.logo{width:70px;height:70px;object-fit:contain;}
+.card:hover{transform:translateY(-8px)}
 
-.status{
-  font-size:0.75rem;
-  padding:5px 12px;
+.tag{
+  padding:6px 14px;
   border-radius:20px;
-  font-weight:bold;
-}
-.open{background:#22c55e;color:white;}
-.upcoming{background:#facc15;}
-.closed{background:#ef4444;color:white;}
-
-.exam-name{font-size:1.25rem;font-weight:600;}
-.category{font-size:0.9rem;color:#6b7280;}
-
-.button{
-  margin-top:10px;
+  font-size:0.75rem;
+  font-weight:700;
   display:inline-block;
+}
+.open{background:#22c55e;color:white}
+.upcoming{background:#facc15}
+.closed{background:#ef4444;color:white}
+
+.exam{font-size:1.4rem;font-weight:700;margin:12px 0}
+.cat{font-size:0.9rem;opacity:0.7}
+
+.btn{
+  padding:10px 18px;
+  border-radius:14px;
+  border:none;
+  margin:6px;
+  font-weight:600;
+  cursor:pointer;
+}
+.primary{
   background:linear-gradient(90deg,#ff512f,#f09819);
   color:white;
-  padding:8px 14px;
-  border-radius:10px;
-  text-decoration:none;
+}
+.secondary{
+  background:transparent;
+  border:2px solid var(--primary);
+}
+
+/* FLOAT BUTTONS */
+#myBtn,#darkBtn{
+  position:fixed;
+  top:20px;
+  padding:12px 18px;
+  border-radius:30px;
   border:none;
   cursor:pointer;
-  font-weight:600;
+  font-weight:700;
 }
+#myBtn{right:20px;background:#ff6a00;color:white}
+#darkBtn{left:20px;background:white}
 
 /* MY EXAMS PANEL */
-#myExamsPanel{
-  display:none;
+.panel{
   position:fixed;
-  right:0;
   top:0;
-  width:340px;
+  right:-420px;
+  width:380px;
   height:100%;
-  background:white;
-  box-shadow:-6px 0 15px rgba(0,0,0,0.2);
-  padding:20px;
-  overflow-y:auto;
-  z-index:1000;
+  background:var(--card);
+  backdrop-filter:blur(18px);
+  padding:24px;
+  transition:0.4s;
+  box-shadow:-10px 0 30px rgba(0,0,0,0.3);
 }
+.panel.show{right:0}
 
+/* PROGRESS CIRCLE */
 .circle{
-  width:80px;
-  height:80px;
+  width:120px;height:120px;
   border-radius:50%;
+  background:conic-gradient(#ff6a00 0%,#ddd 0%);
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight:700;
-  margin:10px 0;
+  margin:20px auto;
 }
-
-.step{
-  font-size:0.9rem;
-  margin-bottom:6px;
-}
-.warning{color:#ef4444;font-weight:600;font-size:0.85rem;}
 </style>
 </head>
 
@@ -145,110 +167,86 @@ select,input{
 
 <header>
   <h1>Examify</h1>
-  <p>Track exams. Register smart. Stay ahead.</p>
-  <button id="myExamBtn" onclick="togglePanel()">📌 My Exams</button>
+  <p>Track exams. Stay ahead.</p>
 </header>
 
-<div id="alertBar">
-🚨 Don’t forget to complete your registrations!
+<div class="topbar">
+  <input id="search" placeholder="🔍 Search exams">
+  <div class="pill active" onclick="filter('All',this)">All</div>
+  <div class="pill" onclick="filter('Engineering',this)">Engineering</div>
+  <div class="pill" onclick="filter('Medical',this)">Medical</div>
+  <div class="pill" onclick="filter('Design',this)">Design</div>
 </div>
 
-<div class="grid">
+<div class="grid" id="grid">
 
-<div class="card" data-name="JEE Main" data-start="2025-12-01" data-end="2026-01-15">
-  <div class="status"></div>
-  <img src="jee-main.jpg" class="logo">
-  <div class="exam-name">JEE Main</div>
-  <div class="category">Engineering</div>
-  <a href="jee-main2.html" class="button">View Details</a><br>
-  <button class="button" onclick="addExam('JEE Main')">Add to My Exams</button>
+<div class="card" data-name="JEE Main" data-category="Engineering" data-date="2026-01-15">
+  <div class="tag open">OPEN</div>
+  <div class="exam">JEE Main</div>
+  <div class="cat">Engineering</div>
+  <a class="btn primary">View Details</a>
+  <button class="btn secondary" onclick="addExam()">Add to My Exams</button>
 </div>
 
-<div class="card" data-name="NEET UG" data-start="2025-02-01" data-end="2025-03-10">
-  <div class="status"></div>
-  <img src="neet.jpg" class="logo">
-  <div class="exam-name">NEET UG</div>
-  <div class="category">Medical</div>
-  <a href="neet.html" class="button">View Details</a><br>
-  <button class="button" onclick="addExam('NEET UG')">Add to My Exams</button>
+<div class="card" data-name="NEET UG" data-category="Medical" data-date="2026-05-05">
+  <div class="tag upcoming">UPCOMING</div>
+  <div class="exam">NEET UG</div>
+  <div class="cat">Medical</div>
+  <a class="btn primary">View Details</a>
+  <button class="btn secondary" onclick="addExam()">Add to My Exams</button>
+</div>
+
+<div class="card" data-name="UCEED" data-category="Design" data-date="2025-01-21">
+  <div class="tag closed">CLOSED</div>
+  <div class="exam">UCEED</div>
+  <div class="cat">Design</div>
+  <a class="btn primary">View Details</a>
+  <button class="btn secondary" onclick="addExam()">Add to My Exams</button>
 </div>
 
 </div>
 
-<div id="myExamsPanel">
-  <h2>📌 My Exams</h2>
-  <div id="myList"></div>
+<button id="myBtn" onclick="togglePanel()">📌 My Exams</button>
+<button id="darkBtn" onclick="toggleDark()">🌙</button>
+
+<div class="panel" id="panel">
+  <h2>My Exam Progress</h2>
+  <div class="circle" id="circle">0%</div>
+  <label><input type="checkbox" onchange="updateProgress()"> Registered</label><br>
+  <label><input type="checkbox" onchange="updateProgress()"> Admit Card</label><br>
+  <label><input type="checkbox" onchange="updateProgress()"> Exam Done</label><br>
+  <label><input type="checkbox" onchange="updateProgress()"> Result Checked</label>
 </div>
 
 <script>
-let exams = JSON.parse(localStorage.getItem("myExams")) || {};
-
-function togglePanel(){
-  const p=document.getElementById("myExamsPanel");
-  p.style.display=p.style.display==="block"?"none":"block";
-}
-
-function addExam(name){
-  if(!exams[name]){
-    exams[name]={steps:[false,false,false,false]};
-    save();
-  }
-}
-
-function save(){
-  localStorage.setItem("myExams",JSON.stringify(exams));
-  render();
-}
-
-function updateStatus(){
-  document.querySelectorAll(".card").forEach(c=>{
-    const s=new Date(c.dataset.start);
-    const e=new Date(c.dataset.end);
-    const t=new Date();
-    const st=c.querySelector(".status");
-    if(t<s){st.textContent="UPCOMING";st.className="status upcoming";}
-    else if(t<=e){st.textContent="OPEN";st.className="status open";}
-    else{st.textContent="CLOSED";st.className="status closed";}
+const cards=document.querySelectorAll(".card");
+document.getElementById("search").oninput=e=>{
+  cards.forEach(c=>{
+    c.style.display=c.dataset.name.toLowerCase().includes(e.target.value.toLowerCase())?"block":"none";
+  });
+};
+function filter(cat,el){
+  document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
+  el.classList.add("active");
+  cards.forEach(c=>{
+    c.style.display=(cat==="All"||c.dataset.category===cat)?"block":"none";
   });
 }
-
-function render(){
-  const box=document.getElementById("myList");
-  box.innerHTML="";
-  for(let exam in exams){
-    const steps=exams[exam].steps;
-    const done=steps.filter(x=>x).length;
-    let percent=Math.round((done/4)*100);
-
-    const card=document.querySelector(`[data-name="${exam}"]`);
-    const end=new Date(card.dataset.end);
-    if(new Date()>end) percent=100;
-
-    box.innerHTML+=`
-      <div>
-        <strong>${exam}</strong>
-        <div class="circle" style="background:conic-gradient(#22c55e ${percent*3.6}deg,#e5e7eb 0deg)">
-          ${percent}%
-        </div>
-        ${["Profile","Academics","Documents","Payment"].map((s,i)=>`
-          <div class="step">
-            <input type="checkbox" ${steps[i]?"checked":""}
-              onchange="toggleStep('${exam}',${i})"> ${s}
-          </div>`).join("")}
-        ${percent<50?'<div class="warning">⚠ Registration incomplete</div>':''}
-        <hr>
-      </div>
-    `;
-  }
+function togglePanel(){
+  document.getElementById("panel").classList.toggle("show");
 }
-
-function toggleStep(exam,i){
-  exams[exam].steps[i]=!exams[exam].steps[i];
-  save();
+function toggleDark(){
+  document.body.classList.toggle("dark");
 }
-
-updateStatus();
-render();
+function updateProgress(){
+  const checks=document.querySelectorAll(".panel input");
+  const done=[...checks].filter(c=>c.checked).length;
+  const percent=Math.round((done/checks.length)*100);
+  document.getElementById("circle").style.background=
+    `conic-gradient(#ff6a00 ${percent}%,#ddd 0%)`;
+  document.getElementById("circle").innerText=percent+"%";
+}
+function addExam(){togglePanel();}
 </script>
 
 </body>
