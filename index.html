@@ -17,17 +17,30 @@ header{
   background:linear-gradient(120deg,#ff512f,#f09819);
   color:white;
   text-align:center;
-  padding:30px 15px;
+  padding:28px 15px;
+  position:relative;
 }
 header h1{
   margin:0;
-  font-size:2.4rem;
-  letter-spacing:1px;
+  font-size:2.3rem;
 }
 header p{
-  margin-top:8px;
-  font-size:1.1rem;
-  opacity:0.95;
+  margin-top:6px;
+  font-size:1.05rem;
+}
+
+/* MY EXAMS BUTTON */
+#myExamBtn{
+  position:absolute;
+  right:20px;
+  top:20px;
+  background:white;
+  color:#b30000;
+  border:none;
+  padding:8px 14px;
+  border-radius:20px;
+  font-weight:600;
+  cursor:pointer;
 }
 
 /* ALERT BAR */
@@ -41,10 +54,7 @@ header p{
   top:0;
   z-index:999;
 }
-#alertBar span{
-  margin-left:15px;
-  cursor:pointer;
-}
+#alertBar span{margin-left:15px;cursor:pointer;}
 
 /* FILTER BAR */
 .filter-bar{
@@ -59,7 +69,6 @@ select,input{
   border-radius:10px;
   border:2px solid #f59e0b;
   font-weight:600;
-  font-size:0.95rem;
 }
 
 /* GRID */
@@ -85,8 +94,8 @@ select,input{
 }
 
 .logo{
-  width:72px;
-  height:72px;
+  width:70px;
+  height:70px;
   object-fit:contain;
   margin-bottom:10px;
 }
@@ -94,7 +103,7 @@ select,input{
 /* STATUS */
 .status{
   font-size:0.75rem;
-  padding:5px 10px;
+  padding:5px 12px;
   border-radius:20px;
   font-weight:bold;
   display:inline-block;
@@ -104,22 +113,16 @@ select,input{
 .upcoming{background:#facc15;}
 .closed{background:#ef4444;color:white;}
 
-.exam-name{
-  font-size:1.25rem;
-  font-weight:600;
-}
-.category{
-  font-size:0.9rem;
-  color:#6b7280;
-}
+.exam-name{font-size:1.25rem;font-weight:600;}
+.category{font-size:0.9rem;color:#6b7280;}
 
 /* BUTTONS */
 .button{
+  margin-top:10px;
   display:inline-block;
-  margin-top:12px;
   background:linear-gradient(90deg,#ff512f,#f09819);
   color:white;
-  padding:9px 16px;
+  padding:8px 14px;
   border-radius:10px;
   text-decoration:none;
   font-weight:600;
@@ -127,35 +130,43 @@ select,input{
   cursor:pointer;
 }
 
-/* MY EXAMS */
-#myExams{
+/* MY EXAMS PANEL */
+#myExamsPanel{
+  display:none;
+  position:fixed;
+  top:0;
+  right:0;
+  width:320px;
+  height:100%;
   background:white;
-  margin:30px;
-  padding:25px;
-  border-radius:20px;
-  box-shadow:0 8px 18px rgba(0,0,0,0.1);
+  box-shadow:-6px 0 15px rgba(0,0,0,0.2);
+  padding:20px;
+  overflow-y:auto;
+  z-index:1000;
 }
-#myExams h2{
+#myExamsPanel h2{
   margin-top:0;
   color:#b30000;
 }
-.progress{
-  background:#e5e7eb;
-  border-radius:10px;
-  overflow:hidden;
+
+/* CIRCULAR PROGRESS */
+.circle{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:conic-gradient(#22c55e 0deg,#e5e7eb 0deg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
   margin-top:8px;
 }
-.progress-bar{
-  height:10px;
-  background:#22c55e;
-  width:0%;
-}
 .myexam{
-  margin-bottom:18px;
+  margin-bottom:20px;
 }
 .small-btn{
   margin-top:6px;
-  padding:6px 12px;
+  padding:6px 10px;
   border-radius:8px;
   border:none;
   background:#fde68a;
@@ -170,10 +181,11 @@ select,input{
 <header>
   <h1>Examify</h1>
   <p>Track exams. Monitor registrations. Stay ahead.</p>
+  <button id="myExamBtn" onclick="toggleMyExams()">📌 My Exams</button>
 </header>
 
 <div id="alertBar">
-🚨 JEE Main registration closing soon — don’t miss it!
+🚨 JEE Main registration closing soon!
 <span onclick="closeAlert()">✖</span>
 </div>
 
@@ -193,6 +205,7 @@ select,input{
   <img src="jee-main.jpg" class="logo">
   <div class="exam-name">JEE Main</div>
   <div class="category">Engineering</div>
+  <a href="jee-main2.html" class="button">View Details</a><br>
   <button class="button" onclick="addToMyExams('JEE Main')">Add to My Exams</button>
 </div>
 
@@ -201,6 +214,7 @@ select,input{
   <img src="jee-advanced.png" class="logo">
   <div class="exam-name">JEE Advanced</div>
   <div class="category">Engineering</div>
+  <a href="jee-adv.html" class="button">View Details</a><br>
   <button class="button" onclick="addToMyExams('JEE Advanced')">Add to My Exams</button>
 </div>
 
@@ -209,59 +223,57 @@ select,input{
   <img src="neet.jpg" class="logo">
   <div class="exam-name">NEET UG</div>
   <div class="category">Medical</div>
+  <a href="neet.html" class="button">View Details</a><br>
   <button class="button" onclick="addToMyExams('NEET UG')">Add to My Exams</button>
 </div>
 
 </div>
 
-<section id="myExams">
+<!-- MY EXAMS PANEL -->
+<div id="myExamsPanel">
   <h2>📌 My Exams</h2>
   <div id="myExamList"></div>
-</section>
+</div>
 
 <script>
 function closeAlert(){
   document.getElementById("alertBar").style.display="none";
 }
 
-/* STATUS LOGIC */
+/* STATUS */
 function updateExamStatus(){
   const today=new Date();
   document.querySelectorAll(".card").forEach(card=>{
-    const start=new Date(card.dataset.start);
-    const end=new Date(card.dataset.end);
-    const status=card.querySelector(".status");
-    if(today<start){
-      status.innerText="UPCOMING";
-      status.className="status upcoming";
-    }else if(today>=start && today<=end){
-      status.innerText="OPEN";
-      status.className="status open";
-    }else{
-      status.innerText="CLOSED";
-      status.className="status closed";
-    }
+    const s=new Date(card.dataset.start);
+    const e=new Date(card.dataset.end);
+    const st=card.querySelector(".status");
+    if(today<s){st.innerText="UPCOMING";st.className="status upcoming";}
+    else if(today<=e){st.innerText="OPEN";st.className="status open";}
+    else{st.innerText="CLOSED";st.className="status closed";}
   });
 }
 updateExamStatus();
 
 /* FILTER + SEARCH */
 function filterExams(){
-  const cat=document.getElementById("category").value;
-  document.querySelectorAll(".card").forEach(c=>{
-    c.style.display=(cat==="all"||c.dataset.category===cat)?"block":"none";
+  const c=document.getElementById("category").value;
+  document.querySelectorAll(".card").forEach(card=>{
+    card.style.display=(c==="all"||card.dataset.category===c)?"block":"none";
   });
 }
 function searchExam(){
   const q=document.getElementById("searchInput").value.toLowerCase();
-  document.querySelectorAll(".card").forEach(c=>{
-    const name=c.querySelector(".exam-name").innerText.toLowerCase();
-    c.style.display=name.includes(q)?"block":"none";
+  document.querySelectorAll(".card").forEach(card=>{
+    card.style.display=card.querySelector(".exam-name").innerText.toLowerCase().includes(q)?"block":"none";
   });
 }
 
 /* MY EXAMS */
 let myExams=JSON.parse(localStorage.getItem("myExams"))||{};
+function toggleMyExams(){
+  const p=document.getElementById("myExamsPanel");
+  p.style.display=p.style.display==="block"?"none":"block";
+}
 
 function addToMyExams(exam){
   if(!myExams[exam]){
@@ -281,13 +293,14 @@ function renderMyExams(){
   const box=document.getElementById("myExamList");
   box.innerHTML="";
   for(let exam in myExams){
+    const deg=myExams[exam]*3.6;
     box.innerHTML+=`
       <div class="myexam">
-        <strong>${exam}</strong> – ${myExams[exam]}%
-        <div class="progress">
-          <div class="progress-bar" style="width:${myExams[exam]}%"></div>
+        <strong>${exam}</strong>
+        <div class="circle" style="background:conic-gradient(#22c55e ${deg}deg,#e5e7eb 0deg)">
+          ${myExams[exam]}%
         </div>
-        <button class="small-btn" onclick="updateProgress('${exam}')">+25% completed</button>
+        <button class="small-btn" onclick="updateProgress('${exam}')">+25%</button>
       </div>
     `;
   }
