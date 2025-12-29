@@ -2,336 +2,231 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Exam Planner</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Examify</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
 :root{
-  --primary:#6366f1;
-  --accent:#22d3ee;
-  --neon:#67e8f9;
-  --bg:linear-gradient(180deg,#eef2ff,#f8fafc);
-  --card:rgba(255,255,255,0.85);
-  --text:#1f2937;
-}
-body.dark{
-  --bg:linear-gradient(180deg,#020617,#0f172a);
-  --card:rgba(30,41,59,0.92);
-  --text:#e5e7eb;
+  --bg:#050814;
+  --card:#0e1333;
+  --accent:#00eaff;
+  --accent2:#6c5ce7;
+  --danger:#ff4d4d;
+  --warn:#ffb84d;
+  --good:#4dff88;
 }
 
-*{box-sizing:border-box}
+*{box-sizing:border-box;font-family:Poppins,Arial}
 body{
   margin:0;
-  font-family:'Poppins',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  transition:0.4s;
-}
-
-/* HEADER */
-header{
-  background:linear-gradient(120deg,#6366f1,#22d3ee);
-  padding:40px 20px;
-  text-align:center;
+  background:radial-gradient(circle at top,#0b1026,var(--bg));
   color:white;
 }
+.container{max-width:1200px;margin:auto;padding:20px}
+h1,h2{margin-bottom:15px}
 
-/* TOP BAR */
-.topbar{
-  position:sticky;
-  top:0;
-  backdrop-filter:blur(18px);
-  background:rgba(255,255,255,0.75);
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  padding:14px;
-  z-index:99;
-}
-body.dark .topbar{background:rgba(15,23,42,0.8)}
-
-.topbar input{
-  padding:12px 18px;
-  border-radius:30px;
-  border:none;
-  width:260px;
-  font-weight:600;
-}
-
-/* PILLS */
-.pill{
-  padding:10px 18px;
-  border-radius:30px;
-  border:2px solid var(--primary);
-  cursor:pointer;
-  font-weight:600;
-}
-.pill.active,.pill:hover{
-  background:var(--primary);
-  color:white;
-  box-shadow:0 0 18px var(--neon);
-}
-
-/* GRID */
+/* ---------- CARDS ---------- */
 .grid{
-  padding:40px;
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:30px;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:20px;
 }
-
-/* CARD */
 .card{
-  background:var(--card);
-  border-radius:26px;
-  padding:28px;
-  text-align:center;
-  box-shadow:0 25px 50px rgba(0,0,0,0.18);
-  transition:0.35s;
+  background:linear-gradient(145deg,#0e1333,#080c24);
+  padding:18px;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  transition:.3s;
 }
-.card:hover{transform:translateY(-8px)}
+.card:hover{transform:translateY(-5px)}
+.card h3{margin:0}
+.card p{opacity:.8;font-size:14px}
 
-.tag{
-  padding:6px 16px;
-  border-radius:20px;
-  font-size:0.75rem;
-  font-weight:700;
-}
-.open{background:#22c55e;color:white}
-.upcoming{background:#facc15}
-.closed{background:#ef4444;color:white}
+/* ---------- COUNTDOWN ---------- */
+.countdown{margin:10px 0;font-weight:600}
+.good{color:var(--good)}
+.warn{color:var(--warn)}
+.danger{color:var(--danger)}
 
-.exam{font-size:1.4rem;font-weight:700;margin:12px 0}
-.cat{opacity:0.7}
-
-.countdown{margin:10px 0;font-weight:700}
-.urgent{color:#ef4444}
-.soon{color:#f59e0b}
-
-/* BUTTONS */
+/* ---------- BUTTONS ---------- */
 .btn{
-  padding:12px 20px;
-  border-radius:16px;
+  padding:8px 14px;
   border:none;
-  margin:6px;
+  border-radius:20px;
   cursor:pointer;
   font-weight:600;
+  margin-right:6px;
 }
-.primary{
-  background:linear-gradient(90deg,#6366f1,#22d3ee);
-  color:white;
-  box-shadow:0 0 20px rgba(99,102,241,0.8);
-}
-.secondary{
-  background:transparent;
-  border:2px solid var(--primary);
-}
-
-/* FLOAT */
-#myBtn,#darkBtn{
-  position:fixed;
-  top:20px;
-  padding:12px 18px;
-  border-radius:30px;
-  border:none;
-  cursor:pointer;
-  font-weight:700;
-}
-#myBtn{
-  right:20px;
-  background:var(--primary);
+.view{
+  background:#1a1f4a;
   color:white;
 }
-#darkBtn{
-  left:20px;
-  background:white;
+.add{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:black;
+  box-shadow:0 0 15px rgba(0,234,255,.7);
+}
+.added{
+  background:#333;
+  color:#aaa;
 }
 
-/* PANEL */
-.panel{
-  position:fixed;
-  top:0;
-  right:-420px;
-  width:380px;
-  height:100%;
-  background:var(--card);
-  backdrop-filter:blur(20px);
-  padding:26px;
-  transition:0.4s;
-  box-shadow:-15px 0 40px rgba(0,0,0,0.35);
+/* ---------- DETAIL VIEW ---------- */
+#detailView{
+  display:none;
+  animation:fade .4s ease;
 }
-.panel.show{right:0}
-
-.my-exam{
-  background:rgba(99,102,241,0.12);
-  border-radius:16px;
-  padding:14px;
-  margin:12px 0;
-  cursor:pointer;
+@keyframes fade{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1}
 }
 
-/* PROGRESS */
-.progress-circle{
-  width:160px;
-  height:160px;
-  border-radius:50%;
-  margin:20px auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-  font-weight:700;
-  background:conic-gradient(#6366f1 0%, #e5e7eb 0%);
-  box-shadow:0 0 35px rgba(99,102,241,0.9);
+/* Progress Ring */
+.progress{
+  width:160px;height:160px;margin:20px auto;position:relative;
 }
-.steps label{
-  display:block;
-  margin:10px 0;
-  cursor:pointer;
+.progress svg{transform:rotate(-90deg)}
+.progress-text{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;font-weight:700;
 }
+
+/* Steps */
+.steps{
+  background:#0d1230;
+  padding:16px;
+  border-radius:14px;
+}
+.steps li{margin-bottom:8px}
+
+.back{margin-top:20px}
 </style>
 </head>
 
 <body>
+<div class="container">
 
-<header>
-  <h1>Examify</h1>
-  <p>Track exams. Stay ahead.</p>
-</header>
+<h1>All Exams</h1>
+<div id="examGrid" class="grid"></div>
 
-<div class="topbar">
-  <input id="search" placeholder="🔍 Search exams">
-  <div class="pill active" onclick="filter('All',this)">All</div>
-  <div class="pill" onclick="filter('Engineering',this)">Engineering</div>
-  <div class="pill" onclick="filter('Medical',this)">Medical</div>
-  <div class="pill" onclick="filter('Design',this)">Design</div>
-</div>
+<h2 style="margin-top:40px">My Exams</h2>
+<div id="myGrid" class="grid"></div>
 
-<div class="grid">
+<!-- DETAIL VIEW -->
+<div id="detailView">
+  <h2 id="detailTitle"></h2>
 
-<div class="card" data-name="JEE Main" data-category="Engineering" data-date="2026-01-15">
-  <div class="tag open">OPEN</div>
-  <div class="exam">JEE Main</div>
-  <div class="cat">Engineering</div>
-  <div class="countdown"></div>
-  <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
-</div>
-
-<div class="card" data-name="NEET UG" data-category="Medical" data-date="2026-05-05">
-  <div class="tag upcoming">UPCOMING</div>
-  <div class="exam">NEET UG</div>
-  <div class="cat">Medical</div>
-  <div class="countdown"></div>
-  <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
-</div>
-
-</div>
-
-<button id="myBtn" onclick="togglePanel()">📌 My Exams</button>
-<button id="darkBtn" onclick="toggleDark()">🌙</button>
-
-<div class="panel" id="panel">
-  <h2>📌 My Exams</h2>
-
-  <div id="examList"></div>
-
-  <div id="examDetail" style="display:none">
-    <button class="btn secondary" onclick="back()">← Back</button>
-    <div class="progress-circle" id="circle">0%</div>
-    <h3 id="examTitle"></h3>
-    <div class="steps" id="steps"></div>
+  <div class="progress">
+    <svg width="160" height="160">
+      <circle cx="80" cy="80" r="70" stroke="#222" stroke-width="12" fill="none"/>
+      <circle id="progCircle" cx="80" cy="80" r="70"
+        stroke="url(#g)" stroke-width="12" fill="none"
+        stroke-dasharray="440" stroke-dashoffset="440"/>
+      <defs>
+        <linearGradient id="g">
+          <stop offset="0%" stop-color="#00eaff"/>
+          <stop offset="100%" stop-color="#6c5ce7"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="progress-text" id="progText">0%</div>
   </div>
+
+  <ul class="steps">
+    <li>✔ Create account</li>
+    <li>✔ Fill details</li>
+    <li>⏳ Upload documents</li>
+    <li>⏳ Pay fees</li>
+  </ul>
+
+  <button class="btn view back" onclick="closeDetail()">⬅ Back</button>
+</div>
+
 </div>
 
 <script>
-const cards=document.querySelectorAll(".card");
-let myExams=[];
+const exams=[
+  {id:1,name:"JEE Main",cat:"Engineering",date:"2026-01-20"},
+  {id:2,name:"JEE Advanced",cat:"Engineering",date:"2026-05-26"},
+  {id:3,name:"UCEED",cat:"Design",date:"2026-01-18"},
+  {id:4,name:"NEET",cat:"Medical",date:"2026-05-05"}
+];
 
-function togglePanel(){panel.classList.toggle("show")}
-function toggleDark(){document.body.classList.toggle("dark")}
+let myExams=JSON.parse(localStorage.getItem("myExams")||"[]");
 
-function updateCountdowns(){
-  const now=new Date();
-  cards.forEach(c=>{
-    const d=Math.ceil((new Date(c.dataset.date)-now)/(1000*60*60*24));
-    const box=c.querySelector(".countdown");
-    box.textContent=d<0?"Exam Over":`⏳ ${d} days left`;
-    box.className="countdown"+(d<=30?" urgent":d<=90?" soon":"");
-  });
+const grid=document.getElementById("examGrid");
+const myGrid=document.getElementById("myGrid");
+
+/* Utils */
+function daysLeft(d){
+  return Math.ceil((new Date(d)-new Date())/86400000);
 }
-updateCountdowns();
-
-function addExam(btn){
-  const card=btn.closest(".card");
-  const name=card.dataset.name;
-  const date=card.dataset.date;
-
-  if(myExams.some(e=>e.name===name)) return;
-
-  myExams.push({
-    name,date,
-    steps:[
-      {label:"Registered on portal",done:false},
-      {label:"Uploaded documents",done:false},
-      {label:"Downloaded admit card",done:false},
-      {label:"Checked exam centre",done:false}
-    ]
-  });
-  renderList();
-  togglePanel();
+function cls(d){
+  if(d<30) return "danger";
+  if(d<90) return "warn";
+  return "good";
 }
 
-function renderList(){
-  examDetail.style.display="none";
-  examList.style.display="block";
-  examList.innerHTML="";
-  myExams.forEach((e,i)=>{
-    examList.innerHTML+=`
-      <div class="my-exam" onclick="openExam(${i})">
-        <strong>${e.name}</strong><br>
-        <small>Click to view progress</small>
+/* Render All Exams */
+function renderAll(){
+  grid.innerHTML="";
+  exams.forEach(e=>{
+    const d=daysLeft(e.date);
+    grid.innerHTML+=`
+      <div class="card">
+        <h3>${e.name}</h3>
+        <p>${e.cat}</p>
+        <div class="countdown ${cls(d)}">${d} days left</div>
+        <button class="btn view" onclick="viewDetail('${e.name}')">View Details</button>
+        <button class="btn ${myExams.includes(e.id)?"added":"add"}"
+          onclick="addExam(${e.id})">
+          ${myExams.includes(e.id)?"Added":"Add to My Exams"}
+        </button>
+      </div>`;
+  });
+  renderMy();
+}
+
+/* Add Exam */
+function addExam(id){
+  if(!myExams.includes(id)){
+    myExams.push(id);
+    localStorage.setItem("myExams",JSON.stringify(myExams));
+    renderAll();
+  }
+}
+
+/* My Exams */
+function renderMy(){
+  myGrid.innerHTML="";
+  exams.filter(e=>myExams.includes(e.id)).forEach(e=>{
+    myGrid.innerHTML+=`
+      <div class="card">
+        <h3>${e.name}</h3>
+        <div class="countdown">${daysLeft(e.date)} days left</div>
+        <button class="btn view" onclick="viewDetail('${e.name}')">View Details</button>
       </div>`;
   });
 }
 
-function openExam(i){
-  const e=myExams[i];
-  examList.style.display="none";
-  examDetail.style.display="block";
-  examTitle.innerText=e.name;
+/* Detail */
+function viewDetail(name){
+  document.getElementById("detailTitle").innerText=name;
+  document.getElementById("detailView").style.display="block";
+  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
 
-  steps.innerHTML="";
-  e.steps.forEach((s,idx)=>{
-    steps.innerHTML+=`
-      <label>
-        <input type="checkbox" ${s.done?"checked":""}
-        onchange="toggleStep(${i},${idx})">
-        ${s.label}
-      </label>`;
-  });
-  updateProgress(e);
+  const p=Math.floor(Math.random()*40+40);
+  document.getElementById("progText").innerText=p+"%";
+  document.getElementById("progCircle").style.strokeDashoffset=
+    440-(440*p/100);
 }
 
-function toggleStep(ei,si){
-  myExams[ei].steps[si].done=!myExams[ei].steps[si].done;
-  updateProgress(myExams[ei]);
+function closeDetail(){
+  document.getElementById("detailView").style.display="none";
 }
 
-function updateProgress(e){
-  const done=e.steps.filter(s=>s.done).length;
-  const p=Math.round(done/e.steps.length*100);
-  circle.innerText=p+"%";
-  circle.style.background=`conic-gradient(#6366f1 ${p}%, #e5e7eb 0%)`;
-}
-
-function back(){
-  examDetail.style.display="none";
-  examList.style.display="block";
-}
+renderAll();
 </script>
-
 </body>
 </html>
