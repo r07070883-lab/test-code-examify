@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Examify</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -11,116 +11,81 @@
 :root{
   --primary:#6366f1;
   --accent:#22d3ee;
-  --neon:#67e8f9;
-  --bg:linear-gradient(180deg,#eef2ff,#f8fafc);
-  --card:rgba(255,255,255,0.9);
+  --bg:#f8fafc;
+  --card:#ffffff;
   --text:#1f2937;
 }
-body.dark{
-  --bg:linear-gradient(180deg,#020617,#0f172a);
-  --card:rgba(30,41,59,0.95);
-  --text:#e5e7eb;
-}
-
-*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:'Poppins',sans-serif;
+  font-family:Poppins,sans-serif;
   background:var(--bg);
   color:var(--text);
 }
 
-/* HEADER */
 header{
-  background:linear-gradient(120deg,#6366f1,#22d3ee);
-  padding:40px 20px;
+  padding:40px;
   text-align:center;
   color:white;
+  background:linear-gradient(120deg,#6366f1,#22d3ee);
 }
 
 /* TOP BAR */
 .topbar{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  padding:16px;
+  background:#ffffffcc;
   position:sticky;
   top:0;
-  z-index:99;
-  background:rgba(255,255,255,0.8);
-  backdrop-filter:blur(18px);
-  display:flex;
-  gap:12px;
-  padding:14px;
-  justify-content:center;
 }
-body.dark .topbar{background:rgba(15,23,42,0.8)}
-
 .pill{
   padding:10px 18px;
-  border-radius:30px;
+  border-radius:20px;
   border:2px solid var(--primary);
   cursor:pointer;
-  font-weight:600;
 }
-.pill.active,.pill:hover{
-  background:var(--primary);
-  color:white;
-  box-shadow:0 0 18px var(--neon);
-}
+.pill.active{background:var(--primary);color:white}
 
 /* GRID */
 .grid{
-  padding:40px;
+  padding:30px;
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:30px;
+  gap:24px;
 }
-
-/* CARD */
 .card{
   background:var(--card);
-  border-radius:26px;
-  padding:28px;
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 20px 40px rgba(0,0,0,.12);
   text-align:center;
-  box-shadow:0 25px 50px rgba(0,0,0,0.18);
-  transition:.3s;
 }
-.card:hover{transform:translateY(-8px)}
-
 .exam{font-size:1.4rem;font-weight:700}
-.cat{opacity:.7}
-.countdown{margin:10px 0;font-weight:700}
-.urgent{color:#ef4444}
-.soon{color:#f59e0b}
+.countdown{margin:10px;font-weight:600}
 
-/* BUTTONS */
+/* BUTTON */
 .btn{
   padding:10px 18px;
-  border-radius:16px;
+  border-radius:14px;
   border:none;
   cursor:pointer;
-  margin:6px;
   font-weight:600;
 }
-.secondary{
-  background:transparent;
-  border:2px solid var(--primary);
-}
-.primary{
-  background:linear-gradient(90deg,#6366f1,#22d3ee);
-  color:white;
-  box-shadow:0 0 20px rgba(99,102,241,.8);
-}
+.add{border:2px solid var(--primary);background:transparent}
 
-/* FLOAT BUTTONS */
-#myBtn,#darkBtn{
+/* FLOAT */
+#myBtn{
   position:fixed;
+  right:20px;
   top:20px;
+  background:var(--primary);
+  color:white;
+  border:none;
   padding:12px 18px;
   border-radius:30px;
-  border:none;
   font-weight:700;
-  cursor:pointer;
 }
-#myBtn{right:20px;background:var(--primary);color:white}
-#darkBtn{left:20px}
 
 /* PANEL */
 .panel{
@@ -129,25 +94,26 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
   right:-420px;
   width:380px;
   height:100%;
-  background:var(--card);
-  padding:26px;
+  background:white;
+  box-shadow:-10px 0 30px rgba(0,0,0,.3);
+  padding:20px;
   transition:.4s;
-  box-shadow:-15px 0 40px rgba(0,0,0,.35);
 }
 .panel.show{right:0}
 
+/* MY EXAMS LIST */
 .my-exam{
-  background:rgba(99,102,241,.12);
   padding:14px;
-  border-radius:16px;
+  border-radius:14px;
+  background:#eef2ff;
   margin:10px 0;
   cursor:pointer;
 }
 
 /* PROGRESS */
 .progress-circle{
-  width:150px;
-  height:150px;
+  width:160px;
+  height:160px;
   border-radius:50%;
   margin:20px auto;
   display:flex;
@@ -156,7 +122,10 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
   font-size:2rem;
   font-weight:700;
   background:conic-gradient(#6366f1 0%, #e5e7eb 0%);
+  transition:.5s;
 }
+.step{margin:10px 0}
+.back{margin-bottom:10px}
 </style>
 </head>
 
@@ -174,30 +143,28 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
 </div>
 
 <div class="grid" id="grid">
-  <div class="card" data-category="Engineering" data-date="2026-01-15" data-name="JEE Main">
+  <div class="card" data-cat="Engineering" data-date="2026-01-15" data-name="JEE Main">
     <div class="exam">JEE Main</div>
-    <div class="cat">Engineering</div>
     <div class="countdown"></div>
-    <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
+    <button class="btn add" onclick="addExam(this)">Add to My Exams</button>
   </div>
 
-  <div class="card" data-category="Medical" data-date="2026-05-05" data-name="NEET UG">
+  <div class="card" data-cat="Medical" data-date="2026-05-05" data-name="NEET UG">
     <div class="exam">NEET UG</div>
-    <div class="cat">Medical</div>
     <div class="countdown"></div>
-    <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
+    <button class="btn add" onclick="addExam(this)">Add to My Exams</button>
   </div>
 </div>
 
 <button id="myBtn" onclick="togglePanel()">📌 My Exams</button>
-<button id="darkBtn" onclick="toggleDark()">🌙</button>
 
 <div class="panel" id="panel">
-  <h2>My Exams</h2>
-  <div id="examList"></div>
+  <h2 id="panelTitle">My Exams</h2>
 
-  <div id="examDetail" style="display:none">
-    <button class="btn secondary" onclick="back()">← Back</button>
+  <div id="listView"></div>
+
+  <div id="detailView" style="display:none">
+    <button class="btn back" onclick="goBack()">← Back</button>
     <div class="progress-circle" id="circle">0%</div>
     <h3 id="examTitle"></h3>
     <div id="steps"></div>
@@ -207,91 +174,105 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
 <script>
 const cards=document.querySelectorAll(".card");
 const panel=document.getElementById("panel");
-const examList=document.getElementById("examList");
-const examDetail=document.getElementById("examDetail");
-const examTitle=document.getElementById("examTitle");
-const steps=document.getElementById("steps");
+const listView=document.getElementById("listView");
+const detailView=document.getElementById("detailView");
 const circle=document.getElementById("circle");
+const stepsBox=document.getElementById("steps");
+const examTitle=document.getElementById("examTitle");
 
 let myExams=[];
+let currentIndex=null;
 
-function togglePanel(){panel.classList.toggle("show")}
-function toggleDark(){document.body.classList.toggle("dark")}
-
+/* FILTER */
 function filter(cat,el){
   document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
   el.classList.add("active");
   cards.forEach(c=>{
-    c.style.display=(cat==="All"||c.dataset.category===cat)?"block":"none";
+    c.style.display=(cat==="All"||c.dataset.cat===cat)?"block":"none";
   });
 }
 
-function updateCountdowns(){
+/* COUNTDOWN */
+function updateCountdown(){
   const now=new Date();
   cards.forEach(c=>{
     const d=Math.ceil((new Date(c.dataset.date)-now)/86400000);
-    const box=c.querySelector(".countdown");
-    box.textContent=`⏳ ${d} days left`;
-    box.className="countdown"+(d<=30?" urgent":d<=90?" soon":"");
+    c.querySelector(".countdown").innerText=`⏳ ${d} days left`;
   });
 }
-updateCountdowns();
+updateCountdown();
 
+/* PANEL */
+function togglePanel(){panel.classList.toggle("show")}
+
+/* ADD EXAM */
 function addExam(btn){
   const card=btn.closest(".card");
   const name=card.dataset.name;
-  if(myExams.some(e=>e.name===name)) return;
+  if(myExams.find(e=>e.name===name)) return;
 
   myExams.push({
     name,
-    steps:["Registered","Uploaded Docs","Admit Card","Centre Checked"].map(s=>({s,done:false}))
+    steps:[
+      {t:"Registered",d:false},
+      {t:"Documents Uploaded",d:false},
+      {t:"Admit Card Downloaded",d:false},
+      {t:"Centre Checked",d:false}
+    ]
   });
   renderList();
-  togglePanel();
 }
 
+/* LIST VIEW */
 function renderList(){
-  examList.innerHTML="";
-  examDetail.style.display="none";
+  listView.innerHTML="";
+  detailView.style.display="none";
+  listView.style.display="block";
+
   myExams.forEach((e,i)=>{
-    examList.innerHTML+=`
+    listView.innerHTML+=`
       <div class="my-exam" onclick="openExam(${i})">
-        <strong>${e.name}</strong>
+        ${e.name}
       </div>`;
   });
 }
 
+/* DETAIL VIEW */
 function openExam(i){
+  currentIndex=i;
   const e=myExams[i];
-  examList.style.display="none";
-  examDetail.style.display="block";
+  listView.style.display="none";
+  detailView.style.display="block";
   examTitle.innerText=e.name;
-  steps.innerHTML="";
-  e.steps.forEach((st,si)=>{
-    steps.innerHTML+=`
-      <label>
-        <input type="checkbox" onchange="toggleStep(${i},${si})">
-        ${st.s}
-      </label>`;
+  stepsBox.innerHTML="";
+
+  e.steps.forEach((s,si)=>{
+    stepsBox.innerHTML+=`
+      <div class="step">
+        <label>
+          <input type="checkbox" onchange="toggleStep(${si})">
+          ${s.t}
+        </label>
+      </div>`;
   });
-  updateProgress(e);
+  updateProgress();
 }
 
-function toggleStep(ei,si){
-  myExams[ei].steps[si].done=!myExams[ei].steps[si].done;
-  updateProgress(myExams[ei]);
+function toggleStep(si){
+  myExams[currentIndex].steps[si].d=!myExams[currentIndex].steps[si].d;
+  updateProgress();
 }
 
-function updateProgress(e){
-  const done=e.steps.filter(s=>s.done).length;
+function updateProgress(){
+  const e=myExams[currentIndex];
+  const done=e.steps.filter(s=>s.d).length;
   const p=Math.round(done/e.steps.length*100);
   circle.innerText=p+"%";
   circle.style.background=`conic-gradient(#6366f1 ${p}%, #e5e7eb 0%)`;
 }
 
-function back(){
-  examDetail.style.display="none";
-  examList.style.display="block";
+function goBack(){
+  renderList();
 }
 </script>
 
