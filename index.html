@@ -2,231 +2,298 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Exam Planner</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examify</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 :root{
-  --bg:#050814;
-  --card:#0e1333;
-  --accent:#00eaff;
-  --accent2:#6c5ce7;
-  --danger:#ff4d4d;
-  --warn:#ffb84d;
-  --good:#4dff88;
+  --primary:#6366f1;
+  --accent:#22d3ee;
+  --neon:#67e8f9;
+  --bg:linear-gradient(180deg,#eef2ff,#f8fafc);
+  --card:rgba(255,255,255,0.9);
+  --text:#1f2937;
+}
+body.dark{
+  --bg:linear-gradient(180deg,#020617,#0f172a);
+  --card:rgba(30,41,59,0.95);
+  --text:#e5e7eb;
 }
 
-*{box-sizing:border-box;font-family:Poppins,Arial}
+*{box-sizing:border-box}
 body{
   margin:0;
-  background:radial-gradient(circle at top,#0b1026,var(--bg));
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  background:linear-gradient(120deg,#6366f1,#22d3ee);
+  padding:40px 20px;
+  text-align:center;
   color:white;
 }
-.container{max-width:1200px;margin:auto;padding:20px}
-h1,h2{margin-bottom:15px}
 
-/* ---------- CARDS ---------- */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:20px;
+/* TOP BAR */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:99;
+  background:rgba(255,255,255,0.8);
+  backdrop-filter:blur(18px);
+  display:flex;
+  gap:12px;
+  padding:14px;
+  justify-content:center;
 }
-.card{
-  background:linear-gradient(145deg,#0e1333,#080c24);
-  padding:18px;
-  border-radius:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,.5);
-  transition:.3s;
-}
-.card:hover{transform:translateY(-5px)}
-.card h3{margin:0}
-.card p{opacity:.8;font-size:14px}
+body.dark .topbar{background:rgba(15,23,42,0.8)}
 
-/* ---------- COUNTDOWN ---------- */
-.countdown{margin:10px 0;font-weight:600}
-.good{color:var(--good)}
-.warn{color:var(--warn)}
-.danger{color:var(--danger)}
-
-/* ---------- BUTTONS ---------- */
-.btn{
-  padding:8px 14px;
-  border:none;
-  border-radius:20px;
+.pill{
+  padding:10px 18px;
+  border-radius:30px;
+  border:2px solid var(--primary);
   cursor:pointer;
   font-weight:600;
-  margin-right:6px;
 }
-.view{
-  background:#1a1f4a;
+.pill.active,.pill:hover{
+  background:var(--primary);
   color:white;
-}
-.add{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:black;
-  box-shadow:0 0 15px rgba(0,234,255,.7);
-}
-.added{
-  background:#333;
-  color:#aaa;
+  box-shadow:0 0 18px var(--neon);
 }
 
-/* ---------- DETAIL VIEW ---------- */
-#detailView{
-  display:none;
-  animation:fade .4s ease;
-}
-@keyframes fade{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1}
+/* GRID */
+.grid{
+  padding:40px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:30px;
 }
 
-/* Progress Ring */
-.progress{
-  width:160px;height:160px;margin:20px auto;position:relative;
+/* CARD */
+.card{
+  background:var(--card);
+  border-radius:26px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 25px 50px rgba(0,0,0,0.18);
+  transition:.3s;
 }
-.progress svg{transform:rotate(-90deg)}
-.progress-text{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;font-weight:700;
+.card:hover{transform:translateY(-8px)}
+
+.exam{font-size:1.4rem;font-weight:700}
+.cat{opacity:.7}
+.countdown{margin:10px 0;font-weight:700}
+.urgent{color:#ef4444}
+.soon{color:#f59e0b}
+
+/* BUTTONS */
+.btn{
+  padding:10px 18px;
+  border-radius:16px;
+  border:none;
+  cursor:pointer;
+  margin:6px;
+  font-weight:600;
+}
+.secondary{
+  background:transparent;
+  border:2px solid var(--primary);
+}
+.primary{
+  background:linear-gradient(90deg,#6366f1,#22d3ee);
+  color:white;
+  box-shadow:0 0 20px rgba(99,102,241,.8);
 }
 
-/* Steps */
-.steps{
-  background:#0d1230;
-  padding:16px;
-  border-radius:14px;
+/* FLOAT BUTTONS */
+#myBtn,#darkBtn{
+  position:fixed;
+  top:20px;
+  padding:12px 18px;
+  border-radius:30px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
 }
-.steps li{margin-bottom:8px}
+#myBtn{right:20px;background:var(--primary);color:white}
+#darkBtn{left:20px}
 
-.back{margin-top:20px}
+/* PANEL */
+.panel{
+  position:fixed;
+  top:0;
+  right:-420px;
+  width:380px;
+  height:100%;
+  background:var(--card);
+  padding:26px;
+  transition:.4s;
+  box-shadow:-15px 0 40px rgba(0,0,0,.35);
+}
+.panel.show{right:0}
+
+.my-exam{
+  background:rgba(99,102,241,.12);
+  padding:14px;
+  border-radius:16px;
+  margin:10px 0;
+  cursor:pointer;
+}
+
+/* PROGRESS */
+.progress-circle{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  margin:20px auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2rem;
+  font-weight:700;
+  background:conic-gradient(#6366f1 0%, #e5e7eb 0%);
+}
 </style>
 </head>
 
 <body>
-<div class="container">
 
-<h1>All Exams</h1>
-<div id="examGrid" class="grid"></div>
+<header>
+  <h1>Examify</h1>
+  <p>Track exams. Stay ahead.</p>
+</header>
 
-<h2 style="margin-top:40px">My Exams</h2>
-<div id="myGrid" class="grid"></div>
-
-<!-- DETAIL VIEW -->
-<div id="detailView">
-  <h2 id="detailTitle"></h2>
-
-  <div class="progress">
-    <svg width="160" height="160">
-      <circle cx="80" cy="80" r="70" stroke="#222" stroke-width="12" fill="none"/>
-      <circle id="progCircle" cx="80" cy="80" r="70"
-        stroke="url(#g)" stroke-width="12" fill="none"
-        stroke-dasharray="440" stroke-dashoffset="440"/>
-      <defs>
-        <linearGradient id="g">
-          <stop offset="0%" stop-color="#00eaff"/>
-          <stop offset="100%" stop-color="#6c5ce7"/>
-        </linearGradient>
-      </defs>
-    </svg>
-    <div class="progress-text" id="progText">0%</div>
-  </div>
-
-  <ul class="steps">
-    <li>✔ Create account</li>
-    <li>✔ Fill details</li>
-    <li>⏳ Upload documents</li>
-    <li>⏳ Pay fees</li>
-  </ul>
-
-  <button class="btn view back" onclick="closeDetail()">⬅ Back</button>
+<div class="topbar">
+  <div class="pill active" onclick="filter('All',this)">All</div>
+  <div class="pill" onclick="filter('Engineering',this)">Engineering</div>
+  <div class="pill" onclick="filter('Medical',this)">Medical</div>
 </div>
 
+<div class="grid" id="grid">
+  <div class="card" data-category="Engineering" data-date="2026-01-15" data-name="JEE Main">
+    <div class="exam">JEE Main</div>
+    <div class="cat">Engineering</div>
+    <div class="countdown"></div>
+    <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
+  </div>
+
+  <div class="card" data-category="Medical" data-date="2026-05-05" data-name="NEET UG">
+    <div class="exam">NEET UG</div>
+    <div class="cat">Medical</div>
+    <div class="countdown"></div>
+    <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
+  </div>
+</div>
+
+<button id="myBtn" onclick="togglePanel()">📌 My Exams</button>
+<button id="darkBtn" onclick="toggleDark()">🌙</button>
+
+<div class="panel" id="panel">
+  <h2>My Exams</h2>
+  <div id="examList"></div>
+
+  <div id="examDetail" style="display:none">
+    <button class="btn secondary" onclick="back()">← Back</button>
+    <div class="progress-circle" id="circle">0%</div>
+    <h3 id="examTitle"></h3>
+    <div id="steps"></div>
+  </div>
 </div>
 
 <script>
-const exams=[
-  {id:1,name:"JEE Main",cat:"Engineering",date:"2026-01-20"},
-  {id:2,name:"JEE Advanced",cat:"Engineering",date:"2026-05-26"},
-  {id:3,name:"UCEED",cat:"Design",date:"2026-01-18"},
-  {id:4,name:"NEET",cat:"Medical",date:"2026-05-05"}
-];
+const cards=document.querySelectorAll(".card");
+const panel=document.getElementById("panel");
+const examList=document.getElementById("examList");
+const examDetail=document.getElementById("examDetail");
+const examTitle=document.getElementById("examTitle");
+const steps=document.getElementById("steps");
+const circle=document.getElementById("circle");
 
-let myExams=JSON.parse(localStorage.getItem("myExams")||"[]");
+let myExams=[];
 
-const grid=document.getElementById("examGrid");
-const myGrid=document.getElementById("myGrid");
+function togglePanel(){panel.classList.toggle("show")}
+function toggleDark(){document.body.classList.toggle("dark")}
 
-/* Utils */
-function daysLeft(d){
-  return Math.ceil((new Date(d)-new Date())/86400000);
-}
-function cls(d){
-  if(d<30) return "danger";
-  if(d<90) return "warn";
-  return "good";
-}
-
-/* Render All Exams */
-function renderAll(){
-  grid.innerHTML="";
-  exams.forEach(e=>{
-    const d=daysLeft(e.date);
-    grid.innerHTML+=`
-      <div class="card">
-        <h3>${e.name}</h3>
-        <p>${e.cat}</p>
-        <div class="countdown ${cls(d)}">${d} days left</div>
-        <button class="btn view" onclick="viewDetail('${e.name}')">View Details</button>
-        <button class="btn ${myExams.includes(e.id)?"added":"add"}"
-          onclick="addExam(${e.id})">
-          ${myExams.includes(e.id)?"Added":"Add to My Exams"}
-        </button>
-      </div>`;
+function filter(cat,el){
+  document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
+  el.classList.add("active");
+  cards.forEach(c=>{
+    c.style.display=(cat==="All"||c.dataset.category===cat)?"block":"none";
   });
-  renderMy();
 }
 
-/* Add Exam */
-function addExam(id){
-  if(!myExams.includes(id)){
-    myExams.push(id);
-    localStorage.setItem("myExams",JSON.stringify(myExams));
-    renderAll();
-  }
+function updateCountdowns(){
+  const now=new Date();
+  cards.forEach(c=>{
+    const d=Math.ceil((new Date(c.dataset.date)-now)/86400000);
+    const box=c.querySelector(".countdown");
+    box.textContent=`⏳ ${d} days left`;
+    box.className="countdown"+(d<=30?" urgent":d<=90?" soon":"");
+  });
+}
+updateCountdowns();
+
+function addExam(btn){
+  const card=btn.closest(".card");
+  const name=card.dataset.name;
+  if(myExams.some(e=>e.name===name)) return;
+
+  myExams.push({
+    name,
+    steps:["Registered","Uploaded Docs","Admit Card","Centre Checked"].map(s=>({s,done:false}))
+  });
+  renderList();
+  togglePanel();
 }
 
-/* My Exams */
-function renderMy(){
-  myGrid.innerHTML="";
-  exams.filter(e=>myExams.includes(e.id)).forEach(e=>{
-    myGrid.innerHTML+=`
-      <div class="card">
-        <h3>${e.name}</h3>
-        <div class="countdown">${daysLeft(e.date)} days left</div>
-        <button class="btn view" onclick="viewDetail('${e.name}')">View Details</button>
+function renderList(){
+  examList.innerHTML="";
+  examDetail.style.display="none";
+  myExams.forEach((e,i)=>{
+    examList.innerHTML+=`
+      <div class="my-exam" onclick="openExam(${i})">
+        <strong>${e.name}</strong>
       </div>`;
   });
 }
 
-/* Detail */
-function viewDetail(name){
-  document.getElementById("detailTitle").innerText=name;
-  document.getElementById("detailView").style.display="block";
-  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
-
-  const p=Math.floor(Math.random()*40+40);
-  document.getElementById("progText").innerText=p+"%";
-  document.getElementById("progCircle").style.strokeDashoffset=
-    440-(440*p/100);
+function openExam(i){
+  const e=myExams[i];
+  examList.style.display="none";
+  examDetail.style.display="block";
+  examTitle.innerText=e.name;
+  steps.innerHTML="";
+  e.steps.forEach((st,si)=>{
+    steps.innerHTML+=`
+      <label>
+        <input type="checkbox" onchange="toggleStep(${i},${si})">
+        ${st.s}
+      </label>`;
+  });
+  updateProgress(e);
 }
 
-function closeDetail(){
-  document.getElementById("detailView").style.display="none";
+function toggleStep(ei,si){
+  myExams[ei].steps[si].done=!myExams[ei].steps[si].done;
+  updateProgress(myExams[ei]);
 }
 
-renderAll();
+function updateProgress(e){
+  const done=e.steps.filter(s=>s.done).length;
+  const p=Math.round(done/e.steps.length*100);
+  circle.innerText=p+"%";
+  circle.style.background=`conic-gradient(#6366f1 ${p}%, #e5e7eb 0%)`;
+}
+
+function back(){
+  examDetail.style.display="none";
+  examList.style.display="block";
+}
 </script>
+
 </body>
 </html>
