@@ -6,92 +6,109 @@
 <title>Examify</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 :root{
-  --primary:#ff6a00;
-  --secondary:#ffd6a5;
-  --bg:#fff7ed;
-  --card:#ffffffcc;
+  --primary:#6366f1;
+  --accent:#22d3ee;
+  --neon:#67e8f9;
+  --bg:linear-gradient(180deg,#eef2ff,#f8fafc);
+  --card:rgba(255,255,255,0.85);
   --text:#1f2937;
 }
 body.dark{
-  --bg:#0f172a;
-  --card:#1e293bcc;
+  --bg:linear-gradient(180deg,#020617,#0f172a);
+  --card:rgba(30,41,59,0.92);
   --text:#e5e7eb;
 }
+
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Poppins,sans-serif;
+  font-family:'Poppins',sans-serif;
   background:var(--bg);
   color:var(--text);
-  transition:0.3s;
+  transition:0.4s;
+  overflow-x:hidden;
 }
 
 /* HEADER */
 header{
-  background:linear-gradient(120deg,#ff512f,#f09819);
-  padding:28px;
-  color:white;
+  background:linear-gradient(120deg,#6366f1,#22d3ee);
+  padding:40px 20px;
   text-align:center;
+  color:white;
+  animation:fadeDown 1s ease;
 }
-header h1{margin:0;font-size:2.6rem}
+header h1{font-size:2.8rem;margin:0}
 header p{opacity:0.9}
 
 /* TOP BAR */
 .topbar{
   position:sticky;
   top:0;
-  backdrop-filter:blur(14px);
+  z-index:99;
+  backdrop-filter:blur(18px);
   background:rgba(255,255,255,0.75);
   display:flex;
   justify-content:center;
   gap:12px;
   padding:14px;
-  z-index:99;
 }
 body.dark .topbar{background:rgba(15,23,42,0.8)}
+
 .topbar input{
   padding:12px 18px;
   border-radius:30px;
   border:none;
   width:260px;
   font-weight:600;
+  outline:none;
 }
+
+/* FILTER PILLS */
 .pill{
-  padding:10px 16px;
+  padding:10px 18px;
   border-radius:30px;
-  background:white;
   border:2px solid var(--primary);
-  cursor:pointer;
   font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
 }
-.pill.active{
-  background:linear-gradient(90deg,#ff512f,#f09819);
+.pill.active,
+.pill:hover{
+  background:var(--primary);
   color:white;
+  box-shadow:0 0 18px var(--neon);
 }
 
 /* GRID */
 .grid{
-  padding:35px;
+  padding:40px;
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:28px;
+  gap:30px;
 }
 
 /* CARD */
 .card{
   background:var(--card);
-  backdrop-filter:blur(14px);
-  border-radius:24px;
-  padding:26px;
+  border-radius:26px;
+  padding:28px;
   text-align:center;
-  box-shadow:0 20px 40px rgba(0,0,0,0.15);
-  transition:0.35s;
+  box-shadow:0 25px 50px rgba(0,0,0,0.18);
+  backdrop-filter:blur(16px);
+  transform:translateY(40px);
+  opacity:0;
+  animation:cardIn 0.8s forwards;
 }
-.card:hover{transform:translateY(-8px)}
+.card:hover{
+  transform:translateY(-10px) scale(1.02);
+}
 
+/* TAG */
 .tag{
-  padding:6px 14px;
+  padding:6px 16px;
   border-radius:20px;
   font-size:0.75rem;
   font-weight:700;
@@ -101,24 +118,43 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
 .upcoming{background:#facc15}
 .closed{background:#ef4444;color:white}
 
-.exam{font-size:1.4rem;font-weight:700;margin:12px 0}
-.cat{font-size:0.9rem;opacity:0.7}
+/* TEXT */
+.exam{font-size:1.45rem;font-weight:700;margin:12px 0}
+.cat{opacity:0.7}
 
+/* COUNTDOWN */
+.countdown{
+  margin:12px 0;
+  font-weight:700;
+}
+.soon{color:#f59e0b}
+.urgent{color:#ef4444}
+
+/* BUTTONS */
 .btn{
-  padding:10px 18px;
-  border-radius:14px;
+  padding:12px 20px;
+  border-radius:16px;
   border:none;
-  margin:6px;
   font-weight:600;
   cursor:pointer;
+  margin:6px;
+  transition:0.3s;
 }
 .primary{
-  background:linear-gradient(90deg,#ff512f,#f09819);
+  background:linear-gradient(90deg,#6366f1,#22d3ee);
   color:white;
+  box-shadow:0 0 20px rgba(99,102,241,0.8);
+}
+.primary:hover{
+  box-shadow:0 0 35px var(--neon);
 }
 .secondary{
   background:transparent;
   border:2px solid var(--primary);
+  color:var(--text);
+}
+.secondary:hover{
+  box-shadow:0 0 25px var(--neon);
 }
 
 /* FLOAT BUTTONS */
@@ -130,9 +166,18 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
   border:none;
   cursor:pointer;
   font-weight:700;
+  z-index:100;
 }
-#myBtn{right:20px;background:#ff6a00;color:white}
-#darkBtn{left:20px;background:white}
+#myBtn{
+  right:20px;
+  background:var(--primary);
+  color:white;
+  box-shadow:0 0 25px var(--neon);
+}
+#darkBtn{
+  left:20px;
+  background:white;
+}
 
 /* MY EXAMS PANEL */
 .panel{
@@ -142,23 +187,33 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
   width:380px;
   height:100%;
   background:var(--card);
-  backdrop-filter:blur(18px);
-  padding:24px;
-  transition:0.4s;
-  box-shadow:-10px 0 30px rgba(0,0,0,0.3);
+  backdrop-filter:blur(20px);
+  padding:26px;
+  transition:0.5s;
+  box-shadow:-15px 0 40px rgba(0,0,0,0.35);
+  z-index:200;
 }
 .panel.show{right:0}
 
-/* PROGRESS CIRCLE */
-.circle{
-  width:120px;height:120px;
-  border-radius:50%;
-  background:conic-gradient(#ff6a00 0%,#ddd 0%);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  margin:20px auto;
+.my-exam{
+  background:rgba(99,102,241,0.12);
+  border-radius:18px;
+  padding:14px;
+  margin:14px 0;
+  animation:fadeUp 0.5s;
+}
+
+/* ANIMATIONS */
+@keyframes cardIn{
+  to{transform:none;opacity:1}
+}
+@keyframes fadeDown{
+  from{opacity:0;transform:translateY(-30px)}
+  to{opacity:1;transform:none}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:none}
 }
 </style>
 </head>
@@ -184,24 +239,27 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
   <div class="tag open">OPEN</div>
   <div class="exam">JEE Main</div>
   <div class="cat">Engineering</div>
-  <a class="btn primary">View Details</a>
-  <button class="btn secondary" onclick="addExam()">Add to My Exams</button>
+  <div class="countdown"></div>
+  <button class="btn primary">View Details</button>
+  <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
 </div>
 
 <div class="card" data-name="NEET UG" data-category="Medical" data-date="2026-05-05">
   <div class="tag upcoming">UPCOMING</div>
   <div class="exam">NEET UG</div>
   <div class="cat">Medical</div>
-  <a class="btn primary">View Details</a>
-  <button class="btn secondary" onclick="addExam()">Add to My Exams</button>
+  <div class="countdown"></div>
+  <button class="btn primary">View Details</button>
+  <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
 </div>
 
 <div class="card" data-name="UCEED" data-category="Design" data-date="2025-01-21">
   <div class="tag closed">CLOSED</div>
   <div class="exam">UCEED</div>
   <div class="cat">Design</div>
-  <a class="btn primary">View Details</a>
-  <button class="btn secondary" onclick="addExam()">Add to My Exams</button>
+  <div class="countdown"></div>
+  <button class="btn primary">View Details</button>
+  <button class="btn secondary" onclick="addExam(this)">Add to My Exams</button>
 </div>
 
 </div>
@@ -210,21 +268,22 @@ body.dark .topbar{background:rgba(15,23,42,0.8)}
 <button id="darkBtn" onclick="toggleDark()">🌙</button>
 
 <div class="panel" id="panel">
-  <h2>My Exam Progress</h2>
-  <div class="circle" id="circle">0%</div>
-  <label><input type="checkbox" onchange="updateProgress()"> Registered</label><br>
-  <label><input type="checkbox" onchange="updateProgress()"> Admit Card</label><br>
-  <label><input type="checkbox" onchange="updateProgress()"> Exam Done</label><br>
-  <label><input type="checkbox" onchange="updateProgress()"> Result Checked</label>
+  <h2>📌 My Exams</h2>
+  <div id="myExamList"></div>
 </div>
 
 <script>
 const cards=document.querySelectorAll(".card");
+let myExams=[];
+
+/* SEARCH */
 document.getElementById("search").oninput=e=>{
   cards.forEach(c=>{
     c.style.display=c.dataset.name.toLowerCase().includes(e.target.value.toLowerCase())?"block":"none";
   });
 };
+
+/* FILTER */
 function filter(cat,el){
   document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
   el.classList.add("active");
@@ -232,21 +291,54 @@ function filter(cat,el){
     c.style.display=(cat==="All"||c.dataset.category===cat)?"block":"none";
   });
 }
+
+/* PANEL */
 function togglePanel(){
   document.getElementById("panel").classList.toggle("show");
 }
 function toggleDark(){
   document.body.classList.toggle("dark");
 }
-function updateProgress(){
-  const checks=document.querySelectorAll(".panel input");
-  const done=[...checks].filter(c=>c.checked).length;
-  const percent=Math.round((done/checks.length)*100);
-  document.getElementById("circle").style.background=
-    `conic-gradient(#ff6a00 ${percent}%,#ddd 0%)`;
-  document.getElementById("circle").innerText=percent+"%";
+
+/* COUNTDOWN */
+function updateCountdowns(){
+  const today=new Date();
+  cards.forEach(card=>{
+    const box=card.querySelector(".countdown");
+    const d=Math.ceil((new Date(card.dataset.date)-today)/(1000*60*60*24));
+    if(d<0){
+      box.textContent="Exam Over";
+      box.className="countdown urgent";
+    }else{
+      box.textContent=`⏳ ${d} days left`;
+      box.className="countdown"+(d<=30?" urgent":d<=90?" soon":"");
+    }
+  });
 }
-function addExam(){togglePanel();}
+updateCountdowns();
+
+/* MY EXAMS */
+function addExam(btn){
+  const card=btn.closest(".card");
+  const name=card.dataset.name;
+  const date=card.dataset.date;
+  if(myExams.some(e=>e.name===name)) return;
+  myExams.push({name,date});
+  renderMyExams();
+  togglePanel();
+}
+function renderMyExams(){
+  const box=document.getElementById("myExamList");
+  box.innerHTML="";
+  myExams.forEach(e=>{
+    const d=Math.ceil((new Date(e.date)-new Date())/(1000*60*60*24));
+    box.innerHTML+=`
+      <div class="my-exam">
+        <strong>${e.name}</strong><br>
+        <small>${d>=0?`⏳ ${d} days left`:"Completed"}</small>
+      </div>`;
+  });
+}
 </script>
 
 </body>
