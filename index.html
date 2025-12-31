@@ -1,221 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Exam Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-*{box-sizing:border-box;font-family:Segoe UI,sans-serif}
-body{
-margin:0;
-background:linear-gradient(135deg,#020617,#0a1a4f,#020617);
-color:#fff;
-min-height:100vh
-}
-header{
-padding:20px;
-display:flex;
-gap:15px;
-flex-wrap:wrap;
-justify-content:center
-}
-input,select{
-padding:12px;
-border-radius:10px;
-border:none;
-outline:none;
-min-width:180px
-}
-h1{text-align:center;margin:15px 0}
-.container{
-max-width:1300px;
-margin:auto;
-padding:20px;
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:22px
-}
-.card{
-background:linear-gradient(160deg,#0b1c46,#050b2e);
-padding:20px;
-border-radius:16px;
-box-shadow:0 12px 35px rgba(0,0,0,.6)
-}
-.exam-name{font-size:22px;font-weight:600}
-.badge{
-margin:8px 0;
-display:inline-block;
-padding:6px 12px;
-border-radius:20px;
-font-size:13px
-}
-.open{background:#16a34a}
-.upcoming{background:#2563eb}
-.closed{background:#991b1b}
-.countdown{margin:10px 0;font-size:14px}
-.actions{display:flex;flex-direction:column;gap:10px}
-.button{
-padding:12px;
-border:none;
-border-radius:10px;
-background:linear-gradient(135deg,#2563eb,#1e40af);
-color:#fff;
-font-weight:600;
-cursor:pointer;
-text-decoration:none;
-text-align:center
-}
-.button.added{background:linear-gradient(135deg,#16a34a,#065f46)}
-.section{display:none}
-.section.active{display:block}
-#modal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.7);
-display:none;
-justify-content:center;
-align-items:center
-}
-.modal-box{
-background:#0b1c46;
-padding:25px;
-border-radius:16px;
-max-width:400px
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Examify Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
-
 <body>
 
-<h1>🎓 Competitive Exams Dashboard</h1>
-
 <header>
-<input id="search" placeholder="Search exams">
-<select id="filter">
-<option value="all">All Categories</option>
-<option value="eng">Engineering</option>
-<option value="med">Medical</option>
-<option value="gov">Government</option>
-<option value="mgmt">Management</option>
-<option value="design">Design</option>
-</select>
-<button class="button" onclick="showMyExams()">My Exams</button>
-<button class="button" onclick="showAll()">All Exams</button>
+  <h1>Examify</h1>
+  <p>Track exams. Stay ahead.</p>
 </header>
 
-<!-- ALL EXAMS -->
-<div id="all" class="section active">
-<div class="container" id="cards"></div>
-</div>
+<section class="filters">
+  <input type="text" placeholder="Search exams">
+  <button class="active">All</button>
+  <button>Engineering</button>
+  <button>Medical</button>
+  <button>Settings</button>
+</section>
 
-<!-- MY EXAMS -->
-<div id="my" class="section">
-<div class="container" id="mycards"></div>
-</div>
+<main class="grid">
 
-<!-- MODAL -->
-<div id="modal" onclick="closeModal()">
-<div class="modal-box" onclick="event.stopPropagation()">
-<h2 id="mTitle"></h2>
-<p id="mBody"></p>
-<button class="button" onclick="closeModal()">Close</button>
-</div>
-</div>
+  <!-- Study Plan -->
+  <div class="card purple">
+    <h3>Personalized Study Plan</h3>
+    <ul>
+      <li>Thermodynamics <span class="progress"></span></li>
+      <li>Chemical Equilibrium <span class="progress gray"></span></li>
+      <li>Organic Chemistry <span class="progress full"></span></li>
+    </ul>
+    <button>Today's Tasks</button>
+  </div>
 
-<script>
-const exams=[
-["JEE Main","eng","2026-01-15","Open","Engineering entrance"],
-["JEE Advanced","eng","2026-05-26","Upcoming","IIT entrance"],
-["NEET UG","med","2026-05-05","Upcoming","Medical UG exam"],
-["NEET PG","med","2026-03-10","Upcoming","Medical PG exam"],
-["UPSC CSE","gov","2026-06-01","Upcoming","Civil services"],
-["CAT","mgmt","2025-11-24","Open","MBA entrance"],
-["GATE","eng","2026-02-10","Upcoming","PG engineering"],
-["CUET UG","eng","2026-05-15","Upcoming","Central universities"],
-["CUET PG","eng","2026-03-20","Upcoming","PG entrance"],
-["NDA","gov","2025-09-08","Open","Defence academy"],
-["CDS","gov","2025-10-15","Open","Defence services"],
-["SSC CGL","gov","2025-12-01","Upcoming","Staff selection"],
-["SSC CHSL","gov","2025-11-10","Upcoming","CHSL exam"],
-["IBPS PO","gov","2025-10-05","Open","Bank PO"],
-["IBPS Clerk","gov","2025-10-20","Open","Bank clerk"],
-["RRB NTPC","gov","2025-12-15","Upcoming","Railways"],
-["RRB Group D","gov","2026-01-05","Upcoming","Railway Group D"],
-["CLAT","law","2025-12-01","Upcoming","Law entrance"],
-["NIFT","design","2026-02-02","Upcoming","Fashion"],
-["UCEED","design","2026-01-20","Upcoming","Design IIT"]
-];
+  <!-- NEET -->
+  <div class="card green">
+    <span class="tag">UPCOMING</span>
+    <h2>NEET UG</h2>
+    <p>Starts in 1d</p>
+    <div class="btn-group">
+      <button>View Details</button>
+      <button class="outline">Mock Test</button>
+    </div>
+  </div>
 
-let my=JSON.parse(localStorage.getItem("myExams"))||[];
+  <!-- AI Doubt Solver -->
+  <div class="card orange">
+    <h2>AI Doubt Solver</h2>
+    <p>Upload a photo of your question</p>
+    <button>Upload</button>
+  </div>
 
-function render(list,target){
-target.innerHTML="";
-list.forEach(e=>{
-const added=my.includes(e[0]);
-const d=Math.max(0,Math.ceil((new Date(e[2])-new Date())/86400000));
-target.innerHTML+=`
-<div class="card" data-cat="${e[1]}" data-name="${e[0].toLowerCase()}">
-<div class="exam-name">${e[0]}</div>
-<span class="badge ${e[3].toLowerCase()}">${e[3]}</span>
-<div class="countdown">${d} days remaining</div>
-<div class="actions">
-<button class="button" onclick="openModal('${e[0]}','${e[4]}')">View Details</button>
-<button class="button ${added?'added':''}" onclick="add('${e[0]}',this)">
-${added?'Added ✓':'Add to My Exams'}
-</button>
-</div>
-</div>`;
-});
-}
+  <!-- Readiness -->
+  <div class="card blue">
+    <h2>Exam Readiness</h2>
+    <div class="circle">72%</div>
+    <p>You are exam ready</p>
+  </div>
 
-function add(n,b){
-if(!my.includes(n)){
-my.push(n);
-localStorage.setItem("myExams",JSON.stringify(my));
-b.classList.add("added");
-b.innerText="Added ✓";
-renderMy();
-}
-}
+  <!-- GLAT -->
+  <div class="card dark">
+    <h2>GLAT</h2>
+    <p>Registration Open</p>
+    <button>Let's Start</button>
+  </div>
 
-function renderMy(){
-const f=exams.filter(e=>my.includes(e[0]));
-render(f,document.getElementById("mycards"));
-}
+  <!-- Flashcards -->
+  <div class="card violet">
+    <h3>Formula & Flashcards Vault</h3>
+    <button>Go to Vault</button>
+  </div>
 
-function openModal(t,b){
-document.getElementById("modal").style.display="flex";
-mTitle.innerText=t;
-mBody.innerText=b;
-}
-function closeModal(){modal.style.display="none"}
+  <!-- Countdown -->
+  <div class="card purple">
+    <h3>NEET UG Countdown</h3>
+    <h2>003 : 14 : 32</h2>
+    <button>View Calendar</button>
+  </div>
 
-function showMyExams(){
-all.classList.remove("active");
-my.classList.add("active");
-renderMy();
-}
-function showAll(){
-my.classList.remove("active");
-all.classList.add("active");
-}
-
-search.oninput=()=>filter();
-filter.onchange=()=>filter();
-
-function filter(){
-const s=search.value.toLowerCase();
-const c=filter.value;
-document.querySelectorAll(".card").forEach(card=>{
-const okName=card.dataset.name.includes(s);
-const okCat=c==="all"||card.dataset.cat===c;
-card.style.display=okName&&okCat?"block":"none";
-});
-}
-
-render(exams,document.getElementById("cards"));
-</script>
+</main>
 
 </body>
 </html>
