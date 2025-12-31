@@ -2,278 +2,219 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Examify</title>
+<title>Exam Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-:root{
-  --primary:#6366f1;
-  --accent:#22d3ee;
-  --bg:#f8fafc;
-  --card:#ffffff;
-  --text:#1f2937;
-}
+*{box-sizing:border-box;font-family:Segoe UI,sans-serif}
 body{
-  margin:0;
-  font-family:Poppins,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+margin:0;
+background:linear-gradient(135deg,#020617,#0a1a4f,#020617);
+color:#fff;
+min-height:100vh
 }
-
 header{
-  padding:40px;
-  text-align:center;
-  color:white;
-  background:linear-gradient(120deg,#6366f1,#22d3ee);
+padding:20px;
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+justify-content:center
 }
-
-/* TOP BAR */
-.topbar{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  padding:16px;
-  background:#ffffffcc;
-  position:sticky;
-  top:0;
+input,select{
+padding:12px;
+border-radius:10px;
+border:none;
+outline:none;
+min-width:180px
 }
-.pill{
-  padding:10px 18px;
-  border-radius:20px;
-  border:2px solid var(--primary);
-  cursor:pointer;
-}
-.pill.active{background:var(--primary);color:white}
-
-/* GRID */
-.grid{
-  padding:30px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:24px;
+h1{text-align:center;margin:15px 0}
+.container{
+max-width:1300px;
+margin:auto;
+padding:20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:22px
 }
 .card{
-  background:var(--card);
-  border-radius:22px;
-  padding:22px;
-  box-shadow:0 20px 40px rgba(0,0,0,.12);
-  text-align:center;
+background:linear-gradient(160deg,#0b1c46,#050b2e);
+padding:20px;
+border-radius:16px;
+box-shadow:0 12px 35px rgba(0,0,0,.6)
 }
-.exam{font-size:1.4rem;font-weight:700}
-.countdown{margin:10px;font-weight:600}
-
-/* BUTTON */
-.btn{
-  padding:10px 18px;
-  border-radius:14px;
-  border:none;
-  cursor:pointer;
-  font-weight:600;
+.exam-name{font-size:22px;font-weight:600}
+.badge{
+margin:8px 0;
+display:inline-block;
+padding:6px 12px;
+border-radius:20px;
+font-size:13px
 }
-.add{border:2px solid var(--primary);background:transparent}
-
-/* FLOAT */
-#myBtn{
-  position:fixed;
-  right:20px;
-  top:20px;
-  background:var(--primary);
-  color:white;
-  border:none;
-  padding:12px 18px;
-  border-radius:30px;
-  font-weight:700;
+.open{background:#16a34a}
+.upcoming{background:#2563eb}
+.closed{background:#991b1b}
+.countdown{margin:10px 0;font-size:14px}
+.actions{display:flex;flex-direction:column;gap:10px}
+.button{
+padding:12px;
+border:none;
+border-radius:10px;
+background:linear-gradient(135deg,#2563eb,#1e40af);
+color:#fff;
+font-weight:600;
+cursor:pointer;
+text-decoration:none;
+text-align:center
 }
-
-/* PANEL */
-.panel{
-  position:fixed;
-  top:0;
-  right:-420px;
-  width:380px;
-  height:100%;
-  background:white;
-  box-shadow:-10px 0 30px rgba(0,0,0,.3);
-  padding:20px;
-  transition:.4s;
+.button.added{background:linear-gradient(135deg,#16a34a,#065f46)}
+.section{display:none}
+.section.active{display:block}
+#modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+display:none;
+justify-content:center;
+align-items:center
 }
-.panel.show{right:0}
-
-/* MY EXAMS LIST */
-.my-exam{
-  padding:14px;
-  border-radius:14px;
-  background:#eef2ff;
-  margin:10px 0;
-  cursor:pointer;
+.modal-box{
+background:#0b1c46;
+padding:25px;
+border-radius:16px;
+max-width:400px
 }
-
-/* PROGRESS */
-.progress-circle{
-  width:160px;
-  height:160px;
-  border-radius:50%;
-  margin:20px auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-  font-weight:700;
-  background:conic-gradient(#6366f1 0%, #e5e7eb 0%);
-  transition:.5s;
-}
-.step{margin:10px 0}
-.back{margin-bottom:10px}
 </style>
 </head>
 
 <body>
 
+<h1>🎓 Competitive Exams Dashboard</h1>
+
 <header>
-  <h1>Examify</h1>
-  <p>Track exams. Stay ahead.</p>
+<input id="search" placeholder="Search exams">
+<select id="filter">
+<option value="all">All Categories</option>
+<option value="eng">Engineering</option>
+<option value="med">Medical</option>
+<option value="gov">Government</option>
+<option value="mgmt">Management</option>
+<option value="design">Design</option>
+</select>
+<button class="button" onclick="showMyExams()">My Exams</button>
+<button class="button" onclick="showAll()">All Exams</button>
 </header>
 
-<div class="topbar">
-  <div class="pill active" onclick="filter('All',this)">All</div>
-  <div class="pill" onclick="filter('Engineering',this)">Engineering</div>
-  <div class="pill" onclick="filter('Medical',this)">Medical</div>
+<!-- ALL EXAMS -->
+<div id="all" class="section active">
+<div class="container" id="cards"></div>
 </div>
 
-<div class="grid" id="grid">
-  <div class="card" data-cat="Engineering" data-date="2026-01-15" data-name="JEE Main">
-    <div class="exam">JEE Main</div>
-    <div class="countdown"></div>
-    <button class="btn add" onclick="addExam(this)">Add to My Exams</button>
-  </div>
-
-  <div class="card" data-cat="Medical" data-date="2026-05-05" data-name="NEET UG">
-    <div class="exam">NEET UG</div>
-    <div class="countdown"></div>
-    <button class="btn add" onclick="addExam(this)">Add to My Exams</button>
-  </div>
+<!-- MY EXAMS -->
+<div id="my" class="section">
+<div class="container" id="mycards"></div>
 </div>
 
-<button id="myBtn" onclick="togglePanel()">📌 My Exams</button>
-
-<div class="panel" id="panel">
-  <h2 id="panelTitle">My Exams</h2>
-
-  <div id="listView"></div>
-
-  <div id="detailView" style="display:none">
-    <button class="btn back" onclick="goBack()">← Back</button>
-    <div class="progress-circle" id="circle">0%</div>
-    <h3 id="examTitle"></h3>
-    <div id="steps"></div>
-  </div>
+<!-- MODAL -->
+<div id="modal" onclick="closeModal()">
+<div class="modal-box" onclick="event.stopPropagation()">
+<h2 id="mTitle"></h2>
+<p id="mBody"></p>
+<button class="button" onclick="closeModal()">Close</button>
+</div>
 </div>
 
 <script>
-const cards=document.querySelectorAll(".card");
-const panel=document.getElementById("panel");
-const listView=document.getElementById("listView");
-const detailView=document.getElementById("detailView");
-const circle=document.getElementById("circle");
-const stepsBox=document.getElementById("steps");
-const examTitle=document.getElementById("examTitle");
+const exams=[
+["JEE Main","eng","2026-01-15","Open","Engineering entrance"],
+["JEE Advanced","eng","2026-05-26","Upcoming","IIT entrance"],
+["NEET UG","med","2026-05-05","Upcoming","Medical UG exam"],
+["NEET PG","med","2026-03-10","Upcoming","Medical PG exam"],
+["UPSC CSE","gov","2026-06-01","Upcoming","Civil services"],
+["CAT","mgmt","2025-11-24","Open","MBA entrance"],
+["GATE","eng","2026-02-10","Upcoming","PG engineering"],
+["CUET UG","eng","2026-05-15","Upcoming","Central universities"],
+["CUET PG","eng","2026-03-20","Upcoming","PG entrance"],
+["NDA","gov","2025-09-08","Open","Defence academy"],
+["CDS","gov","2025-10-15","Open","Defence services"],
+["SSC CGL","gov","2025-12-01","Upcoming","Staff selection"],
+["SSC CHSL","gov","2025-11-10","Upcoming","CHSL exam"],
+["IBPS PO","gov","2025-10-05","Open","Bank PO"],
+["IBPS Clerk","gov","2025-10-20","Open","Bank clerk"],
+["RRB NTPC","gov","2025-12-15","Upcoming","Railways"],
+["RRB Group D","gov","2026-01-05","Upcoming","Railway Group D"],
+["CLAT","law","2025-12-01","Upcoming","Law entrance"],
+["NIFT","design","2026-02-02","Upcoming","Fashion"],
+["UCEED","design","2026-01-20","Upcoming","Design IIT"]
+];
 
-let myExams=[];
-let currentIndex=null;
+let my=JSON.parse(localStorage.getItem("myExams"))||[];
 
-/* FILTER */
-function filter(cat,el){
-  document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
-  el.classList.add("active");
-  cards.forEach(c=>{
-    c.style.display=(cat==="All"||c.dataset.cat===cat)?"block":"none";
-  });
+function render(list,target){
+target.innerHTML="";
+list.forEach(e=>{
+const added=my.includes(e[0]);
+const d=Math.max(0,Math.ceil((new Date(e[2])-new Date())/86400000));
+target.innerHTML+=`
+<div class="card" data-cat="${e[1]}" data-name="${e[0].toLowerCase()}">
+<div class="exam-name">${e[0]}</div>
+<span class="badge ${e[3].toLowerCase()}">${e[3]}</span>
+<div class="countdown">${d} days remaining</div>
+<div class="actions">
+<button class="button" onclick="openModal('${e[0]}','${e[4]}')">View Details</button>
+<button class="button ${added?'added':''}" onclick="add('${e[0]}',this)">
+${added?'Added ✓':'Add to My Exams'}
+</button>
+</div>
+</div>`;
+});
 }
 
-/* COUNTDOWN */
-function updateCountdown(){
-  const now=new Date();
-  cards.forEach(c=>{
-    const d=Math.ceil((new Date(c.dataset.date)-now)/86400000);
-    c.querySelector(".countdown").innerText=`⏳ ${d} days left`;
-  });
+function add(n,b){
+if(!my.includes(n)){
+my.push(n);
+localStorage.setItem("myExams",JSON.stringify(my));
+b.classList.add("added");
+b.innerText="Added ✓";
+renderMy();
 }
-updateCountdown();
-
-/* PANEL */
-function togglePanel(){panel.classList.toggle("show")}
-
-/* ADD EXAM */
-function addExam(btn){
-  const card=btn.closest(".card");
-  const name=card.dataset.name;
-  if(myExams.find(e=>e.name===name)) return;
-
-  myExams.push({
-    name,
-    steps:[
-      {t:"Registered",d:false},
-      {t:"Documents Uploaded",d:false},
-      {t:"Admit Card Downloaded",d:false},
-      {t:"Centre Checked",d:false}
-    ]
-  });
-  renderList();
 }
 
-/* LIST VIEW */
-function renderList(){
-  listView.innerHTML="";
-  detailView.style.display="none";
-  listView.style.display="block";
-
-  myExams.forEach((e,i)=>{
-    listView.innerHTML+=`
-      <div class="my-exam" onclick="openExam(${i})">
-        ${e.name}
-      </div>`;
-  });
+function renderMy(){
+const f=exams.filter(e=>my.includes(e[0]));
+render(f,document.getElementById("mycards"));
 }
 
-/* DETAIL VIEW */
-function openExam(i){
-  currentIndex=i;
-  const e=myExams[i];
-  listView.style.display="none";
-  detailView.style.display="block";
-  examTitle.innerText=e.name;
-  stepsBox.innerHTML="";
+function openModal(t,b){
+document.getElementById("modal").style.display="flex";
+mTitle.innerText=t;
+mBody.innerText=b;
+}
+function closeModal(){modal.style.display="none"}
 
-  e.steps.forEach((s,si)=>{
-    stepsBox.innerHTML+=`
-      <div class="step">
-        <label>
-          <input type="checkbox" onchange="toggleStep(${si})">
-          ${s.t}
-        </label>
-      </div>`;
-  });
-  updateProgress();
+function showMyExams(){
+all.classList.remove("active");
+my.classList.add("active");
+renderMy();
+}
+function showAll(){
+my.classList.remove("active");
+all.classList.add("active");
 }
 
-function toggleStep(si){
-  myExams[currentIndex].steps[si].d=!myExams[currentIndex].steps[si].d;
-  updateProgress();
+search.oninput=()=>filter();
+filter.onchange=()=>filter();
+
+function filter(){
+const s=search.value.toLowerCase();
+const c=filter.value;
+document.querySelectorAll(".card").forEach(card=>{
+const okName=card.dataset.name.includes(s);
+const okCat=c==="all"||card.dataset.cat===c;
+card.style.display=okName&&okCat?"block":"none";
+});
 }
 
-function updateProgress(){
-  const e=myExams[currentIndex];
-  const done=e.steps.filter(s=>s.d).length;
-  const p=Math.round(done/e.steps.length*100);
-  circle.innerText=p+"%";
-  circle.style.background=`conic-gradient(#6366f1 ${p}%, #e5e7eb 0%)`;
-}
-
-function goBack(){
-  renderList();
-}
+render(exams,document.getElementById("cards"));
 </script>
 
 </body>
