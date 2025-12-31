@@ -2,84 +2,569 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Examify Dashboard</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam Explorer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #0f172a, #020617 50%, #020617 100%);
+      color: #e5e7eb;
+    }
+
+    header {
+      background: linear-gradient(90deg, #1d4ed8, #2563eb, #1d4ed8);
+      color: #f9fafb;
+      text-align: center;
+      padding: 18px 0;
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      box-shadow: 0 6px 24px rgba(15, 23, 42, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .quote {
+      text-align: center;
+      font-style: italic;
+      font-weight: 600;
+      color: #bfdbfe;
+      margin: 10px 0 18px;
+      font-size: 1.05rem;
+    }
+
+    .top-bar {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 10px 16px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-weight: 600;
+      color: #c4d3ff;
+      font-size: 0.9rem;
+    }
+
+    select,
+    input[type="text"] {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 999px;
+      border: 1px solid #1d4ed8;
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      outline: none;
+      transition: 0.25s ease;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+      min-width: 160px;
+    }
+
+    select:focus,
+    input[type="text"]:focus {
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.75);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .view-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .pill-btn.active,
+    .pill-btn:hover {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.7);
+    }
+
+    h1 {
+      text-align: center;
+      color: #e5e7eb;
+      font-size: 1.7rem;
+      margin: 14px 0 18px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+      padding: 0 24px 40px;
+      max-width: 1300px;
+      margin: 0 auto 40px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #111827, #020617);
+      border-radius: 18px;
+      box-shadow: 0 12px 34px rgba(15, 23, 42, 0.95);
+      padding: 18px 16px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transform: translateY(10px);
+      opacity: 0;
+      animation: cardIn 0.45s ease forwards;
+    }
+
+    .card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.55);
+      border-color: rgba(59, 130, 246, 0.9);
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      padding: 6px;
+      box-shadow: 0 0 16px rgba(15, 23, 42, 0.9);
+      margin-bottom: 4px;
+    }
+
+    .exam-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #f9fafb;
+      text-align: center;
+    }
+
+    .category {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .status-row {
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+
+    .badge {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border: 1px solid transparent;
+    }
+
+    .badge.upcoming {
+      background: rgba(59, 130, 246, 0.16);
+      border-color: rgba(59, 130, 246, 0.7);
+      color: #bfdbfe;
+    }
+
+    .badge.open {
+      background: rgba(34, 197, 94, 0.16);
+      border-color: rgba(34, 197, 94, 0.8);
+      color: #bbf7d0;
+    }
+
+    .badge.closed {
+      background: rgba(239, 68, 68, 0.16);
+      border-color: rgba(239, 68, 68, 0.85);
+      color: #fecaca;
+    }
+
+    .countdown {
+      font-size: 0.8rem;
+      color: #e5e7eb;
+      margin-top: 2px;
+    }
+
+    .button-row {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .button-link {
+      display: inline-block;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.7);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .button-link:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.9);
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .button-add {
+      border: none;
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      transition: 0.18s ease;
+      width: 100%;
+      max-width: 170px;
+    }
+
+    .button-add:hover {
+      background: rgba(30, 64, 175, 1);
+      border-color: rgba(59, 130, 246, 0.9);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.7);
+    }
+
+    .button-add.added {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-color: transparent;
+      color: #ecfdf5;
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.85);
+    }
+
+    .button-add.added:hover {
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 700px) {
+      header {
+        font-size: 1.6rem;
+        padding: 14px 0;
+      }
+      h1 {
+        font-size: 1.45rem;
+      }
+      .grid {
+        padding: 0 16px 32px;
+      }
+      .top-bar {
+        padding: 10px 12px 0;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
+  <header>🎓 Exam Explorer</header>
+  <div class="quote">"Patience = Success"</div>
 
-<header>
-  <h1>Examify</h1>
-  <p>Track exams. Stay ahead.</p>
-</header>
+  <div class="top-bar">
+    <div class="filter-bar">
+      <label for="category">Sort by Category:</label>
+      <select id="category">
+        <option value="all">All</option>
+        <option value="engineering">Engineering</option>
+        <option value="medical">Medical</option>
+        <option value="law">Law</option>
+        <option value="design">Design</option>
+        <option value="architecture">Architecture</option>
+        <option value="defence">Defence</option>
+        <option value="management">Management</option>
+        <option value="government">Government</option>
+        <option value="research">Research</option>
+        <option value="others">Others</option>
+      </select>
+      <input type="text" id="search" placeholder="Search exams..." />
+    </div>
 
-<section class="filters">
-  <input type="text" placeholder="Search exams">
-  <button class="active">All</button>
-  <button>Engineering</button>
-  <button>Medical</button>
-  <button>Settings</button>
-</section>
-
-<main class="grid">
-
-  <!-- Study Plan -->
-  <div class="card purple">
-    <h3>Personalized Study Plan</h3>
-    <ul>
-      <li>Thermodynamics <span class="progress"></span></li>
-      <li>Chemical Equilibrium <span class="progress gray"></span></li>
-      <li>Organic Chemistry <span class="progress full"></span></li>
-    </ul>
-    <button>Today's Tasks</button>
-  </div>
-
-  <!-- NEET -->
-  <div class="card green">
-    <span class="tag">UPCOMING</span>
-    <h2>NEET UG</h2>
-    <p>Starts in 1d</p>
-    <div class="btn-group">
-      <button>View Details</button>
-      <button class="outline">Mock Test</button>
+    <div class="view-buttons">
+      <button class="pill-btn active" id="btnAll">All Exams</button>
+      <button class="pill-btn" id="btnMy">My Exams</button>
     </div>
   </div>
 
-  <!-- AI Doubt Solver -->
-  <div class="card orange">
-    <h2>AI Doubt Solver</h2>
-    <p>Upload a photo of your question</p>
-    <button>Upload</button>
+  <h1 id="sectionTitle">All Exams</h1>
+
+  <!-- All Exams Section -->
+  <div class="section active" id="allSection">
+    <div class="grid" id="allGrid"></div>
   </div>
 
-  <!-- Readiness -->
-  <div class="card blue">
-    <h2>Exam Readiness</h2>
-    <div class="circle">72%</div>
-    <p>You are exam ready</p>
+  <!-- My Exams Section -->
+  <div class="section" id="mySection">
+    <div class="grid" id="myGrid"></div>
   </div>
 
-  <!-- GLAT -->
-  <div class="card dark">
-    <h2>GLAT</h2>
-    <p>Registration Open</p>
-    <button>Let's Start</button>
-  </div>
+  <script>
+    // Exams data: name, categoryKey, logo, link, examDate, regStatus, regCloseDate
+    const exams = [
+      // Engineering (national + state + private)[web:58][web:75]
+      ["JEE Main", "engineering", "jee-main.jpg", "jee-main.html", "2026-01-15", "Open", "2025-12-20"],
+      ["JEE Advanced", "engineering", "jee-advanced.png", "jee-advanced.html", "2026-05-26", "Upcoming", "2026-04-30"],
+      ["BITSAT", "engineering", "bitsat.png", "bitsat.html", "2026-05-10", "Upcoming", "2026-04-15"],
+      ["VITEEE", "engineering", "viteee.jpg", "viteee.html", "2026-04-20", "Upcoming", "2026-03-30"],
+      ["SRMJEEE", "engineering", "srmjeee.png", "srmjeee.html", "2026-04-10", "Upcoming", "2026-03-25"],
+      ["WBJEE", "engineering", "wbjee.jpg", "wbjee.html", "2026-03-15", "Upcoming", "2026-02-20"],
+      ["MHT CET", "engineering", "mhtcet.jpg", "mhtcet.html", "2026-05-05", "Upcoming", "2026-04-15"],
+      ["KCET", "engineering", "kcet.jpg", "kcet.html", "2026-04-25", "Upcoming", "2026-03-31"],
+      ["AP EAMCET", "engineering", "apeamcet.jpg", "apeamcet.html", "2026-04-30", "Upcoming", "2026-04-05"],
+      ["TS EAMCET", "engineering", "tseamcet.jpg", "tseamcet.html", "2026-05-02", "Upcoming", "2026-04-10"],
+      ["COMEDK UGET", "engineering", "comedk.jpg", "comedk.html", "2026-05-15", "Upcoming", "2026-04-20"],
+      ["MET (Manipal)", "engineering", "met.jpg", "met.html", "2026-04-05", "Upcoming", "2026-03-10"],
+      ["UGEE (IIITH)", "engineering", "ugee.jpg", "ugee.html", "2026-03-25", "Upcoming", "2026-03-01"],
+      ["GATE", "engineering", "gate.jpg", "gate.html", "2026-02-10", "Upcoming", "2025-10-10"],
 
-  <!-- Flashcards -->
-  <div class="card violet">
-    <h3>Formula & Flashcards Vault</h3>
-    <button>Go to Vault</button>
-  </div>
+      // Medical[web:59][web:62]
+      ["NEET UG", "medical", "neet-ug.jpg", "neet-ug.html", "2026-05-05", "Upcoming", "2026-04-10"],
+      ["NEET PG", "medical", "neet-pg.jpg", "neet-pg.html", "2026-03-10", "Upcoming", "2026-02-10"],
+      ["AIIMS Nursing", "medical", "aiims-nursing.jpg", "aiims-nursing.html", "2026-06-10", "Upcoming", "2026-05-10"],
 
-  <!-- Countdown -->
-  <div class="card purple">
-    <h3>NEET UG Countdown</h3>
-    <h2>003 : 14 : 32</h2>
-    <button>View Calendar</button>
-  </div>
+      // Law (UG+PG)[web:60][web:62]
+      ["CLAT UG", "law", "clat.jpg", "clat-ug.html", "2025-12-01", "Upcoming", "2025-11-10"],
+      ["CLAT PG", "law", "clat-pg.jpg", "clat-pg.html", "2025-12-01", "Upcoming", "2025-11-10"],
+      ["AILET", "law", "ailet.jpg", "ailet.html", "2025-12-15", "Upcoming", "2025-11-20"],
 
-</main>
+      // Design / Architecture[web:62]
+      ["UCEED", "design", "uceed.png", "uceed.html", "2026-01-20", "Upcoming", "2025-12-31"],
+      ["CEED", "design", "ceed.jpg", "ceed.html", "2026-01-25", "Upcoming", "2026-01-05"],
+      ["NID DAT", "design", "nid.jpg", "nid.html", "2026-01-10", "Upcoming", "2025-12-20"],
+      ["NIFT", "design", "nift.jpg", "nift.html", "2026-02-02", "Upcoming", "2026-01-10"],
+      ["NATA", "architecture", "nata.jpg", "nata.html", "2026-02-15", "Upcoming", "2026-01-25"],
 
+      // Defence[web:60]
+      ["NDA", "defence", "nda.jpg", "nda.html", "2026-04-14", "Upcoming", "2026-03-20"],
+      ["CDS", "defence", "cds.jpg", "cds.html", "2026-02-16", "Upcoming", "2026-01-25"],
+
+      // Management (UG+PG)[web:60][web:64]
+      ["CAT", "management", "cat.jpg", "cat.html", "2025-11-24", "Open", "2025-09-25"],
+      ["XAT", "management", "xat.jpg", "xat.html", "2026-01-05", "Upcoming", "2025-11-30"],
+      ["CMAT", "management", "cmat.jpg", "cmat.html", "2026-02-20", "Upcoming", "2026-01-20"],
+      ["IPMAT", "management", "ipmat.jpg", "ipmat.html", "2026-05-15", "Upcoming", "2026-04-10"],
+
+      // Government / Banking / SSC[web:60]
+      ["UPSC CSE Prelims", "government", "upsc.jpg", "upsc.html", "2026-06-01", "Upcoming", "2026-02-20"],
+      ["SSC CGL", "government", "ssc-cgl.jpg", "ssc-cgl.html", "2025-12-01", "Upcoming", "2025-10-15"],
+      ["SSC CHSL", "government", "ssc-chsl.jpg", "ssc-chsl.html", "2025-11-10", "Upcoming", "2025-09-30"],
+      ["IBPS PO", "government", "ibps-po.jpg", "ibps-po.html", "2025-10-05", "Open", "2025-08-25"],
+      ["IBPS Clerk", "government", "ibps-clerk.jpg", "ibps-clerk.html", "2025-10-20", "Open", "2025-09-05"],
+      ["RRB NTPC", "government", "rrb-ntpc.jpg", "rrb-ntpc.html", "2025-12-15", "Upcoming", "2025-10-20"],
+      ["RRB Group D", "government", "rrb-groupd.jpg", "rrb-groupd.html", "2026-01-05", "Upcoming", "2025-11-15"],
+
+      // Research / Science[web:62]
+      ["IAT (IISER Aptitude Test)", "research", "iat.png", "iat.html", "2026-04-20", "Upcoming", "2026-03-25"],
+      ["NEST", "research", "nest.jpg", "nest.html", "2026-06-05", "Upcoming", "2026-05-10"],
+      ["CUET UG", "others", "cuet-ug.jpg", "cuet-ug.html", "2026-04-01", "Upcoming", "2026-03-10"],
+      ["CUET PG", "others", "cuet-pg.jpg", "cuet-pg.html", "2026-05-01", "Upcoming", "2026-04-05"]
+    ];
+
+    // LocalStorage for My Exams
+    const STORAGE_KEY = "myExamSelections";
+    let myExams = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+    const allGrid = document.getElementById("allGrid");
+    const myGrid = document.getElementById("myGrid");
+    const categorySelect = document.getElementById("category");
+    const searchInput = document.getElementById("search");
+    const btnAll = document.getElementById("btnAll");
+    const btnMy = document.getElementById("btnMy");
+    const allSection = document.getElementById("allSection");
+    const mySection = document.getElementById("mySection");
+    const sectionTitle = document.getElementById("sectionTitle");
+
+    function daysBetween(dateStr) {
+      const today = new Date();
+      const target = new Date(dateStr + "T00:00:00");
+      const diff = target - today;
+      return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    }
+
+    function getStatusClass(status) {
+      const s = status.toLowerCase();
+      if (s === "open") return "open";
+      if (s === "closed") return "closed";
+      return "upcoming";
+    }
+
+    function renderCards(targetGrid, list) {
+      targetGrid.innerHTML = "";
+      list.forEach((exam, index) => {
+        const [name, catKey, img, link, examDate, regStatus, regCloseDate] = exam;
+        const d = daysBetween(examDate);
+        const regDays = daysBetween(regCloseDate);
+        const stored = myExams.includes(name);
+        const statusClass = getStatusClass(regStatus);
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.animationDelay = (index * 0.03) + "s";
+        card.dataset.category = catKey;
+        card.dataset.name = name.toLowerCase();
+
+        card.innerHTML = `
+          <img src="${img}" class="logo" alt="${name}">
+          <div class="exam-name">${name}</div>
+          <div class="category">${formatCategory(catKey)}</div>
+          <div class="status-row">
+            <span class="badge ${statusClass}">${regStatus}</span>
+            <span class="countdown">${d} days to exam</span>
+          </div>
+          <div class="status-row">
+            <span class="countdown">Registration closes in ${regDays} days</span>
+          </div>
+          <div class="button-row">
+            <a href="${link}" class="button-link">View Details</a>
+            <button class="button-add ${stored ? "added" : ""}">
+              ${stored ? "Added ✓" : "Add to My Exams"}
+            </button>
+          </div>
+        `;
+
+        const addBtn = card.querySelector(".button-add");
+        addBtn.addEventListener("click", () => toggleMyExam(name, addBtn));
+
+        targetGrid.appendChild(card);
+      });
+    }
+
+    function formatCategory(c) {
+      if (c === "engineering") return "Engineering";
+      if (c === "medical") return "Medical";
+      if (c === "law") return "Law";
+      if (c === "design") return "Design";
+      if (c === "architecture") return "Architecture";
+      if (c === "defence") return "Defence";
+      if (c === "management") return "Management";
+      if (c === "government") return "Government / Banking / SSC";
+      if (c === "research") return "Science / Research";
+      return "Others";
+    }
+
+    function toggleMyExam(name, btn) {
+      if (myExams.includes(name)) {
+        myExams = myExams.filter(n => n !== name);
+        btn.classList.remove("added");
+        btn.textContent = "Add to My Exams";
+      } else {
+        myExams.push(name);
+        btn.classList.add("added");
+        btn.textContent = "Added ✓";
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(myExams));
+      renderMySection();
+    }
+
+    function applyFilters() {
+      const cat = categorySelect.value;
+      const searchValue = searchInput.value.toLowerCase();
+
+      document.querySelectorAll("#allGrid .card").forEach(card => {
+        const cardCat = card.dataset.category;
+        const cardName = card.dataset.name;
+        const matchesSearch = cardName.includes(searchValue);
+        let matchesCat = false;
+
+        if (cat === "all") {
+          matchesCat = true;
+        } else {
+          matchesCat = cardCat === cat;
+        }
+
+        card.style.display = (matchesSearch && matchesCat) ? "flex" : "none";
+      });
+    }
+
+    function renderAllSection() {
+      renderCards(allGrid, exams);
+      applyFilters();
+    }
+
+    function renderMySection() {
+      const filtered = exams.filter(e => myExams.includes(e[0]));
+      renderCards(myGrid, filtered);
+    }
+
+    // Switch All / My
+    btnAll.addEventListener("click", () => {
+      btnAll.classList.add("active");
+      btnMy.classList.remove("active");
+      allSection.classList.add("active");
+      mySection.classList.remove("active");
+      sectionTitle.textContent = "All Exams";
+    });
+
+    btnMy.addEventListener("click", () => {
+      btnMy.classList.add("active");
+      btnAll.classList.remove("active");
+      allSection.classList.remove("active");
+      mySection.classList.add("active");
+      sectionTitle.textContent = "My Exams";
+      renderMySection();
+    });
+
+    categorySelect.addEventListener("change", applyFilters);
+    searchInput.addEventListener("input", applyFilters);
+
+    // Initial render
+    renderAllSection();
+    renderMySection();
+  </script>
 </body>
 </html>
