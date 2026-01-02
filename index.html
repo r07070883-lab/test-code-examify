@@ -383,10 +383,7 @@ h1 {
 
 <script>
 // Exams data for ONLY the selected exams.
-// Format: [name, categoryKey, logoFile, linkFile, examDate(YYYY-MM-DD), regStatus, regCloseDate(YYYY-MM-DD)]
-// File names and image names are kept EXACTLY as in your second snippet.
 const exams = [
-  // Engineering
   ["JEE Main", "engineering", "jee-main.jpg", "jee-main2.html", "2026-01-15", "Open", "2025-12-20"],
   ["JEE Advanced", "engineering", "jee-advanced.png", "jee-adv.html", "2026-05-26", "Upcoming", "2026-04-30"],
   ["BITSAT", "engineering", "bitsat.png", "bitsat.html", "2026-05-10", "Upcoming", "2026-04-15"],
@@ -395,18 +392,12 @@ const exams = [
   ["WBJEE", "engineering", "wbjee.jpg", "wbjee.html", "2026-03-15", "Upcoming", "2026-02-20"],
   ["MET", "engineering", "met.jpg", "met1.html", "2026-04-05", "Upcoming", "2026-03-10"],
   ["UGEE", "engineering", "ugee.jpg", "ugee.html", "2026-03-25", "Upcoming", "2026-03-01"],
-
-  // Both (Engineering + something)
   ["KCET", "both", "kcet.jpg", "kcet0.html", "2026-04-25", "Upcoming", "2026-03-31"],
   ["TS EAMCET", "both", "ts-eamcet.jpg", "tseamcet.html", "2026-05-02", "Upcoming", "2026-04-10"],
   ["COMEDK", "both", "comedk.jpg", "comedk.html", "2026-05-15", "Upcoming", "2026-04-20"],
   ["AP-EAMCET", "both", "apeamcet.jpg", "apeapcet.html", "2026-04-30", "Upcoming", "2026-04-05"],
   ["MHTCET", "both", "mhtcet.jpg", "mhtcet.html", "2026-05-05", "Upcoming", "2026-04-15"],
-
-  // Medical
   ["NEET UG", "medical", "jee-main.jpg", "neet.html", "2026-05-05", "Upcoming", "2026-04-10"],
-
-  // Others
   ["CUET", "others", "jee-main.jpg", "cuet.html", "2026-04-01", "Upcoming", "2026-03-10"],
   ["IAT (IISER)", "others", "iat.png", "iat.html", "2026-04-20", "Upcoming", "2026-03-25"],
   ["NEST", "others", "nest.jpg", "nest.html", "2026-06-05", "Upcoming", "2026-05-10"],
@@ -415,12 +406,32 @@ const exams = [
   ["NATA", "others", "nata.jpg", "nata.html", "2026-02-15", "Upcoming", "2026-01-25"]
 ];
 
-const STORAGE_KEY = "myExamSelections";
-const CHECKLIST_KEY = "examChecklists";
+const STORAGE_KEY_BASE = "myExamSelections_";        // per user
+const CHECKLIST_KEY_BASE = "examChecklists_";        // per user
+const CURRENT_USER_KEY = "examExplorerCurrentUser";  // set by login page [web:24]
 
-// Load from localStorage (if present) so selections/checklists persist.[web:4][web:9]
-let myExams = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-let checklistState = JSON.parse(localStorage.getItem(CHECKLIST_KEY) || "{}");
+// helpers for auth
+function getCurrentUser() {
+  return localStorage.getItem(CURRENT_USER_KEY) || null;
+}
+function requireLogin() {
+  alert("You must login to use 'My Exams'. You will be redirected to the login page.");
+  window.location.href = "login.html";
+}
+
+// get keys for current user (or guest)
+function getStorageKeys() {
+  const user = getCurrentUser();
+  const suffix = user ? user : "guest";
+  return {
+    myExamsKey: STORAGE_KEY_BASE + suffix,
+    checklistKey: CHECKLIST_KEY_BASE + suffix
+  };
+}
+
+const keys = getStorageKeys();
+let myExams = JSON.parse(localStorage.getItem(keys.myExamsKey) || "[]");
+let checklistState = JSON.parse(localStorage.getItem(keys.checklistKey) || "{}");
 
 const allGrid = document.getElementById("allGrid");
 const myGrid = document.getElementById("myGrid");
@@ -438,16 +449,13 @@ function daysBetween(dateStr) {
   const diff = target - today;
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 }
-
 function getStatusClass(status) {
   const s = status.toLowerCase();
   if (s === "open") return "open";
   if (s === "closed") return "closed";
   return "upcoming";
 }
-
 function formatCategory(key, rawCategory) {
-  // Keep your visible category text similar to the second snippet.
   if (key === "engineering") return "Engineering";
   if (key === "medical") return "Medical";
   if (key === "both") return rawCategory || "Engineering / Medical";
@@ -455,7 +463,7 @@ function formatCategory(key, rawCategory) {
   return rawCategory || "Others";
 }
 
-// All Exams cards (no checklist, no progress circle)
+// All Exams
 function renderAllCards(targetGrid, list) {
   targetGrid.innerHTML = "";
   list.forEach((exam, index) => {
@@ -491,13 +499,19 @@ function renderAllCards(targetGrid, list) {
     `;
 
     const addBtn = card.querySelector(".button-add");
-    addBtn.addEventListener("click", () => toggleMyExam(name, addBtn));
+    addBtn.addEventListener("click", () => {
+      if (!getCurrentUser()) {
+        requireLogin();
+        return;
+      }
+      toggleMyExam(name, addBtn);
+    });
 
     targetGrid.appendChild(card);
   });
 }
 
-// Checklist model
+// checklist
 const defaultSteps = [
   "Create account / sign up",
   "Fill application form",
@@ -513,23 +527,21 @@ function getChecklistForExam(name) {
   }
   return checklistState[name];
 }
-
 function saveChecklist() {
-  localStorage.setItem(CHECKLIST_KEY, JSON.stringify(checklistState));
+  const k = getStorageKeys();
+  localStorage.setItem(k.checklistKey, JSON.stringify(checklistState));
 }
-
 function calcProgressPercent(flags) {
   const total = flags.length;
   const done = flags.filter(Boolean).length;
   return total === 0 ? 0 : Math.round((done / total) * 100);
 }
-
 function setCircleProgress(circleEl, percent) {
   const degrees = Math.round((percent / 100) * 360);
   circleEl.style.background = `conic-gradient(#22c55e ${degrees}deg, #e5e7eb 0deg)`;
 }
 
-// My Exams cards (with circular progress + checklist)
+// My Exams
 function renderMyCards(targetGrid, list) {
   targetGrid.innerHTML = "";
   list.forEach((exam, index) => {
@@ -608,6 +620,10 @@ function renderMyCards(targetGrid, list) {
 }
 
 function toggleMyExam(name, btn) {
+  if (!getCurrentUser()) {
+    requireLogin();
+    return;
+  }
   if (myExams.includes(name)) {
     myExams = myExams.filter(n => n !== name);
     btn.classList.remove("added");
@@ -617,7 +633,8 @@ function toggleMyExam(name, btn) {
     btn.classList.add("added");
     btn.textContent = "Added ✓";
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(myExams));
+  const k = getStorageKeys();
+  localStorage.setItem(k.myExamsKey, JSON.stringify(myExams));
   renderMySection();
 }
 
@@ -626,7 +643,7 @@ function applyFilters() {
   const searchValue = searchInput.value.toLowerCase();
 
   document.querySelectorAll("#allGrid .card").forEach(card => {
-    const cardCat = card.dataset.category; // engineering / medical / both / others
+    const cardCat = card.dataset.category;
     const cardName = card.dataset.name;
     const matchesSearch = cardName.includes(searchValue);
 
@@ -649,13 +666,16 @@ function renderAllSection() {
   renderAllCards(allGrid, exams);
   applyFilters();
 }
-
 function renderMySection() {
+  if (!getCurrentUser()) {
+    myGrid.innerHTML = "<p style='color:#e5e7eb; text-align:center;'>Please login to view your My Exams list.</p>";
+    return;
+  }
   const filtered = exams.filter(e => myExams.includes(e[0]));
   renderMyCards(myGrid, filtered);
 }
 
-// Switch All / My
+// Tab switching
 btnAll.addEventListener("click", () => {
   btnAll.classList.add("active");
   btnMy.classList.remove("active");
@@ -664,6 +684,10 @@ btnAll.addEventListener("click", () => {
   sectionTitle.textContent = "All Exams";
 });
 btnMy.addEventListener("click", () => {
+  if (!getCurrentUser()) {
+    requireLogin();
+    return;
+  }
   btnMy.classList.add("active");
   btnAll.classList.remove("active");
   allSection.classList.remove("active");
