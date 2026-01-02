@@ -489,9 +489,11 @@ function renderAllCards(targetGrid, list) {
       <img src="${img}" class="logo" alt="${name}">
       <div class="exam-name">${name}</div>
       <div class="category">${formatCategory(catKey)}</div>
-      <div class="status-row">
+            <div class="status-row">
         <span class="badge ${statusClass}">${regStatus}</span>
-        <span class="countdown">${d} days to exam</span>
+        <span class="countdown" data-exam-date="${examDate}">
+          <span class="days-left">${d}</span> days to exam
+        </span>
       </div>
       <div class="status-row">
         <span class="countdown">Registration closes in ${regDays} days</span>
@@ -578,9 +580,11 @@ function renderMyCards(targetGrid, list) {
       <img src="${img}" class="logo" alt="${name}">
       <div class="exam-name">${name}</div>
       <div class="category">${formatCategory(catKey)}</div>
-      <div class="status-row">
+            <div class="status-row">
         <span class="badge ${statusClass}">${regStatus}</span>
-        <span class="countdown">${d} days to exam</span>
+        <span class="countdown" data-exam-date="${examDate}">
+          <span class="days-left">${d}</span> days to exam
+        </span>
       </div>
       <div class="status-row">
         <span class="countdown">Registration closes in ${regDays} days</span>
@@ -716,6 +720,25 @@ searchInput.addEventListener("input", applyFilters);
 // Initial render
 renderAllSection();
 renderMySection();
+  // Live countdown updater for "days to exam"
+function updateCountdowns() {
+  const now = new Date();
+  document.querySelectorAll(".countdown[data-exam-date]").forEach(el => {
+    const dateStr = el.getAttribute("data-exam-date");
+    const target = new Date(dateStr + "T00:00:00");
+    const diff = target - now;
+    let daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    if (daysLeft < 0) daysLeft = 0;
+    const span = el.querySelector(".days-left");
+    if (span) {
+      span.textContent = daysLeft;
+    }
+  });
+}
+
+// Update every second (1000 ms)
+setInterval(updateCountdowns, 1000);
+updateCountdowns(); // run once immediately
 </script>
 </body>
 </html>
