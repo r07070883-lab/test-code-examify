@@ -439,7 +439,7 @@ const exams = [
 
 const STORAGE_KEY_BASE = "myExamSelections_";        // per user
 const CHECKLIST_KEY_BASE = "examChecklists_";        // per user
-const CURRENT_USER_KEY = "examExplorerCurrentUser";  // set by login page
+const CURRENT_USER_KEY = "examExplorerCurrentUser";  // set by login page [web:11][web:32]
 
 const allGrid = document.getElementById("allGrid");
 const myGrid = document.getElementById("myGrid");
@@ -490,10 +490,7 @@ function renderAccountSection() {
     const logoutLink = document.getElementById("logoutLink");
     if (logoutLink) {
       logoutLink.addEventListener("click", () => {
-        // remove current user's data only [web:131][web:137]
-        const keys = getStorageKeys();
-        localStorage.removeItem(keys.myExamsKey);
-        localStorage.removeItem(keys.checklistKey);
+        // Only log out: keep My Exams and checklist data in localStorage. [web:131][web:30][web:160]
         localStorage.removeItem(CURRENT_USER_KEY);
         location.reload();
       });
