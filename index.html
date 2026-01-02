@@ -335,6 +335,24 @@ h1 {
 .checklist-item input {
   cursor: pointer;
 }
+/* Account section (right side of top bar) */
+.account-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e5e7eb;
+  font-size: 0.8rem;
+}
+.account-username {
+  font-weight: 600;
+}
+.account-link {
+  color: #38bdf8;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
 @media (max-width: 700px) {
   header {
     font-size: 1.6rem;
@@ -369,9 +387,16 @@ h1 {
     </select>
     <input type="text" id="search" placeholder="Search exams..." />
   </div>
-  <div class="view-buttons">
-    <button class="pill-btn active" id="btnAll">All Exams</button>
-    <button class="pill-btn" id="btnMy">My Exams</button>
+
+  <div style="display:flex; align-items:center; gap:12px;">
+    <div class="view-buttons">
+      <button class="pill-btn active" id="btnAll">All Exams</button>
+      <button class="pill-btn" id="btnMy">My Exams</button>
+    </div>
+    <!-- Account section -->
+    <div class="account-section" id="accountSection">
+      <!-- Filled by JS -->
+    </div>
   </div>
 </div>
 
@@ -416,6 +441,17 @@ const STORAGE_KEY_BASE = "myExamSelections_";        // per user
 const CHECKLIST_KEY_BASE = "examChecklists_";        // per user
 const CURRENT_USER_KEY = "examExplorerCurrentUser";  // set by login page
 
+const allGrid = document.getElementById("allGrid");
+const myGrid = document.getElementById("myGrid");
+const categorySelect = document.getElementById("category");
+const searchInput = document.getElementById("search");
+const btnAll = document.getElementById("btnAll");
+const btnMy = document.getElementById("btnMy");
+const allSection = document.getElementById("allSection");
+const mySection = document.getElementById("mySection");
+const sectionTitle = document.getElementById("sectionTitle");
+const accountSection = document.getElementById("accountSection");
+
 // helpers for auth
 function getCurrentUser() {
   return localStorage.getItem(CURRENT_USER_KEY) || null;
@@ -435,19 +471,39 @@ function getStorageKeys() {
   };
 }
 
+function renderAccountSection() {
+  const user = getCurrentUser();
+  if (!user) {
+    accountSection.innerHTML =
+      '<span>Not logged in</span> | <span class="account-link" id="loginLink">Login</span>';
+    const loginLink = document.getElementById("loginLink");
+    if (loginLink) {
+      loginLink.addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
+    }
+  } else {
+    accountSection.innerHTML =
+      '<span class="account-username">' +
+      user +
+      '</span> | <span class="account-link" id="logoutLink">Logout</span>';
+    const logoutLink = document.getElementById("logoutLink");
+    if (logoutLink) {
+      logoutLink.addEventListener("click", () => {
+        // remove current user's data only [web:131][web:137]
+        const keys = getStorageKeys();
+        localStorage.removeItem(keys.myExamsKey);
+        localStorage.removeItem(keys.checklistKey);
+        localStorage.removeItem(CURRENT_USER_KEY);
+        location.reload();
+      });
+    }
+  }
+}
+
 const keys = getStorageKeys();
 let myExams = JSON.parse(localStorage.getItem(keys.myExamsKey) || "[]");
 let checklistState = JSON.parse(localStorage.getItem(keys.checklistKey) || "{}");
-
-const allGrid = document.getElementById("allGrid");
-const myGrid = document.getElementById("myGrid");
-const categorySelect = document.getElementById("category");
-const searchInput = document.getElementById("search");
-const btnAll = document.getElementById("btnAll");
-const btnMy = document.getElementById("btnMy");
-const allSection = document.getElementById("allSection");
-const mySection = document.getElementById("mySection");
-const sectionTitle = document.getElementById("sectionTitle");
 
 function daysBetween(dateStr) {
   const today = new Date();
@@ -735,6 +791,7 @@ function updateCountdowns() {
 }
 
 // Initial render
+renderAccountSection();
 renderAllSection();
 renderMySection();
 
