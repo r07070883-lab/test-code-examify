@@ -717,10 +717,7 @@ btnMy.addEventListener("click", () => {
 categorySelect.addEventListener("change", applyFilters);
 searchInput.addEventListener("input", applyFilters);
 
-// Initial render
-renderAllSection();
-renderMySection();
-  // Live countdown updater for "days to exam"
+// Live countdown updater for "days to exam"
 function updateCountdowns() {
   const now = new Date();
   document.querySelectorAll(".countdown[data-exam-date]").forEach(el => {
@@ -736,9 +733,14 @@ function updateCountdowns() {
   });
 }
 
-// Update every second (1000 ms)
-setInterval(updateCountdowns, 1000);
-updateCountdowns(); // run once immediately
+// Initial render (create cards first)
+renderAllSection();
+renderMySection();
+
+// Start countdown after cards exist
+updateCountdowns();               // run once immediately
+setInterval(updateCountdowns, 1000); // then every second
+
 </script>
 </body>
 </html>
