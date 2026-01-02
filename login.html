@@ -112,8 +112,9 @@
   </form>
 
   <div class="link-row">
-    No account? Just enter any username and password and they will be saved for next time.
-  </div>
+  Not having account, create a new one
+</div>
+
 
   <div id="message" class="msg"></div>
 </div>
@@ -167,7 +168,7 @@ document.getElementById("authForm").addEventListener("submit", function (e) {
     : "Login successful. Redirecting...";
   msgEl.className = "msg success";
   setTimeout(() => {
-    window.location.href = "exam-explorer.html"; // change to your main page filename
+    window.location.href = "index.html"; // change to your main page filename
   }, 800);
 });
 </script>
