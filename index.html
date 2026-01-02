@@ -16,7 +16,7 @@ body {
   background: radial-gradient(circle at top, #0f172a, #020617 50%, #020617 100%);
   color: #0f172a;
 }
-  .progress-message {
+.progress-message {
   margin-top: 4px;
   font-size: 0.75rem;
   color: #16a34a;
@@ -414,7 +414,7 @@ const exams = [
 
 const STORAGE_KEY_BASE = "myExamSelections_";        // per user
 const CHECKLIST_KEY_BASE = "examChecklists_";        // per user
-const CURRENT_USER_KEY = "examExplorerCurrentUser";  // set by login page [web:24]
+const CURRENT_USER_KEY = "examExplorerCurrentUser";  // set by login page
 
 // helpers for auth
 function getCurrentUser() {
@@ -489,7 +489,7 @@ function renderAllCards(targetGrid, list) {
       <img src="${img}" class="logo" alt="${name}">
       <div class="exam-name">${name}</div>
       <div class="category">${formatCategory(catKey)}</div>
-            <div class="status-row">
+      <div class="status-row">
         <span class="badge ${statusClass}">${regStatus}</span>
         <span class="countdown" data-exam-date="${examDate}">
           <span class="days-left">${d}</span> days to exam
@@ -576,11 +576,11 @@ function renderMyCards(targetGrid, list) {
       `;
     }).join("");
 
-        card.innerHTML = `
+    card.innerHTML = `
       <img src="${img}" class="logo" alt="${name}">
       <div class="exam-name">${name}</div>
       <div class="category">${formatCategory(catKey)}</div>
-            <div class="status-row">
+      <div class="status-row">
         <span class="badge ${statusClass}">${regStatus}</span>
         <span class="countdown" data-exam-date="${examDate}">
           <span class="days-left">${d}</span> days to exam
@@ -608,15 +608,15 @@ function renderMyCards(targetGrid, list) {
       </div>
     `;
 
-
     const circle = card.querySelector(".progress-ring");
     const inner = card.querySelector(".progress-inner");
     const msgEl = card.querySelector(".progress-message");
 
     setCircleProgress(circle, percent);
     inner.textContent = percent + "%";
-    msgEl.textContent = percent === 100 ? "All the very best for your exam (TEAM EXAMIFY). For further queries, contact : Aditya Bagewadi : 782980957 (Anytime, Anywhere)" : "";
-
+    msgEl.textContent = percent === 100
+      ? "All the very best for your exam (TEAM EXAMIFY). For further queries, contact : Aditya Bagewadi : 782980957 (Anytime, Anywhere)"
+      : "";
 
     card.querySelectorAll(".checklist-item input").forEach(input => {
       input.addEventListener("change", () => {
@@ -628,8 +628,9 @@ function renderMyCards(targetGrid, list) {
         const newPercent = calcProgressPercent(currentFlags);
         setCircleProgress(circle, newPercent);
         inner.textContent = newPercent + "%";
-        msgEl.textContent = newPercent === 100 ? "All the very best for your exam (TEAM EXAMIFY). For further queries, contact : Aditya Bagewadi : 782980957 (Anytime, Anywhere)" : "";
-
+        msgEl.textContent = newPercent === 100
+          ? "All the very best for your exam (TEAM EXAMIFY). For further queries, contact : Aditya Bagewadi : 782980957 (Anytime, Anywhere)"
+          : "";
       });
     });
 
@@ -733,14 +734,13 @@ function updateCountdowns() {
   });
 }
 
-// Initial render (create cards first)
+// Initial render
 renderAllSection();
 renderMySection();
 
 // Start countdown after cards exist
-updateCountdowns();               // run once immediately
-setInterval(updateCountdowns, 1000); // then every second
-
+updateCountdowns();
+setInterval(updateCountdowns, 1000);
 </script>
 </body>
 </html>
