@@ -16,6 +16,12 @@ body {
   background: radial-gradient(circle at top, #0f172a, #020617 50%, #020617 100%);
   color: #0f172a;
 }
+  .progress-message {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #16a34a;
+  text-align: center;
+}
 header {
   background: linear-gradient(90deg, #1d4ed8, #2563eb, #1d4ed8);
   color: #f9fafb;
@@ -568,7 +574,7 @@ function renderMyCards(targetGrid, list) {
       `;
     }).join("");
 
-    card.innerHTML = `
+        card.innerHTML = `
       <img src="${img}" class="logo" alt="${name}">
       <div class="exam-name">${name}</div>
       <div class="category">${formatCategory(catKey)}</div>
@@ -585,6 +591,7 @@ function renderMyCards(targetGrid, list) {
             <div class="progress-inner">${percent}%</div>
           </div>
           <div class="progress-label">Registration progress</div>
+          <div class="progress-message"></div>
         </div>
         <div class="checklist">
           <div class="checklist-title">My Registration Steps</div>
@@ -597,10 +604,15 @@ function renderMyCards(targetGrid, list) {
       </div>
     `;
 
+
     const circle = card.querySelector(".progress-ring");
     const inner = card.querySelector(".progress-inner");
+    const msgEl = card.querySelector(".progress-message");
+
     setCircleProgress(circle, percent);
     inner.textContent = percent + "%";
+    msgEl.textContent = percent === 100 ? "All the very best for your exam" : "";
+
 
     card.querySelectorAll(".checklist-item input").forEach(input => {
       input.addEventListener("change", () => {
@@ -612,6 +624,8 @@ function renderMyCards(targetGrid, list) {
         const newPercent = calcProgressPercent(currentFlags);
         setCircleProgress(circle, newPercent);
         inner.textContent = newPercent + "%";
+        msgEl.textContent = newPercent === 100 ? "All the very best for your exam" : "";
+
       });
     });
 
