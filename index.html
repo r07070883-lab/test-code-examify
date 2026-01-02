@@ -394,9 +394,7 @@ h1 {
       <button class="pill-btn" id="btnMy">My Exams</button>
     </div>
     <!-- Account section -->
-    <div class="account-section" id="accountSection">
-      <!-- Filled by JS -->
-    </div>
+    <div class="account-section" id="accountSection"></div>
   </div>
 </div>
 
@@ -437,9 +435,9 @@ const exams = [
   ["NATA", "others", "nata.jpg", "nata.html", "2026-02-15", "Upcoming", "2026-01-25"]
 ];
 
-const STORAGE_KEY_BASE = "myExamSelections_";        // per user
-const CHECKLIST_KEY_BASE = "examChecklists_";        // per user
-const CURRENT_USER_KEY = "examExplorerCurrentUser";  // set by login page [web:11][web:32]
+const STORAGE_KEY_BASE = "myExamSelections_";
+const CHECKLIST_KEY_BASE = "examChecklists_";
+const CURRENT_USER_KEY = "examExplorerCurrentUser";
 
 const allGrid = document.getElementById("allGrid");
 const myGrid = document.getElementById("myGrid");
@@ -452,7 +450,6 @@ const mySection = document.getElementById("mySection");
 const sectionTitle = document.getElementById("sectionTitle");
 const accountSection = document.getElementById("accountSection");
 
-// helpers for auth
 function getCurrentUser() {
   return localStorage.getItem(CURRENT_USER_KEY) || null;
 }
@@ -460,10 +457,7 @@ function requireLogin() {
   alert("You must login to use 'My Exams'. You will be redirected to the login page.");
   window.location.href = "login.html";
 }
-
-// get keys for current user (or guest)
-function getStorageKeys() {
-  const user = getCurrentUser();
+function getStorageKeysForUser(user) {
   const suffix = user ? user : "guest";
   return {
     myExamsKey: STORAGE_KEY_BASE + suffix,
@@ -471,9 +465,15 @@ function getStorageKeys() {
   };
 }
 
+// initial load of keys and data for current user
+let currentUser = getCurrentUser();
+let keys = getStorageKeysForUser(currentUser);
+let myExams = JSON.parse(localStorage.getItem(keys.myExamsKey) || "[]");
+let checklistState = JSON.parse(localStorage.getItem(keys.checklistKey) || "{}");
+
 function renderAccountSection() {
-  const user = getCurrentUser();
-  if (!user) {
+  currentUser = getCurrentUser();
+  if (!currentUser) {
     accountSection.innerHTML =
       '<span>Not logged in</span> | <span class="account-link" id="loginLink">Login</span>';
     const loginLink = document.getElementById("loginLink");
@@ -485,22 +485,18 @@ function renderAccountSection() {
   } else {
     accountSection.innerHTML =
       '<span class="account-username">' +
-      user +
+      currentUser +
       '</span> | <span class="account-link" id="logoutLink">Logout</span>';
     const logoutLink = document.getElementById("logoutLink");
     if (logoutLink) {
       logoutLink.addEventListener("click", () => {
-        // Only log out: keep My Exams and checklist data in localStorage. [web:131][web:30][web:160]
+        // only clear current user flag; keep data keys [web:4][web:9][web:160]
         localStorage.removeItem(CURRENT_USER_KEY);
         location.reload();
       });
     }
   }
 }
-
-const keys = getStorageKeys();
-let myExams = JSON.parse(localStorage.getItem(keys.myExamsKey) || "[]");
-let checklistState = JSON.parse(localStorage.getItem(keys.checklistKey) || "{}");
 
 function daysBetween(dateStr) {
   const today = new Date();
@@ -589,8 +585,8 @@ function getChecklistForExam(name) {
   return checklistState[name];
 }
 function saveChecklist() {
-  const k = getStorageKeys();
-  localStorage.setItem(k.checklistKey, JSON.stringify(checklistState));
+  keys = getStorageKeysForUser(getCurrentUser());
+  localStorage.setItem(keys.checklistKey, JSON.stringify(checklistState));
 }
 function calcProgressPercent(flags) {
   const total = flags.length;
@@ -705,8 +701,8 @@ function toggleMyExam(name, btn) {
     btn.classList.add("added");
     btn.textContent = "Added ✓";
   }
-  const k = getStorageKeys();
-  localStorage.setItem(k.myExamsKey, JSON.stringify(myExams));
+  keys = getStorageKeysForUser(getCurrentUser());
+  localStorage.setItem(keys.myExamsKey, JSON.stringify(myExams));
   renderMySection();
 }
 
