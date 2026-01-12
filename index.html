@@ -792,19 +792,162 @@ renderMySection();
 updateCountdowns();
 setInterval(updateCountdowns, 1000);
 </script>
- <!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/6964e10501fa4519826fc3f8/1jep0u0d8';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
+ <div id="exam-chatbot" style="
+  max-width: 420px;
+  margin: 20px auto;
+  border-radius: 16px;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  box-shadow: 0 18px 40px rgba(15,23,42,0.55);
+">
+  <h3 style="margin-top: 0; font-size: 18px; color: #38bdf8;">
+    Exam Assistant
+  </h3>
+  <p style="font-size: 13px; color: #9ca3af; margin-bottom: 10px;">
+    Ask: “Why this exam?” or “What is a good score?” for this exam.
+  </p>
+
+  <div id="exam-chatbot-messages" style="
+    background: radial-gradient(circle at top left, #1e293b, #020617);
+    border-radius: 12px;
+    padding: 10px;
+    height: 220px;
+    overflow-y: auto;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  ">
+    <div style="
+      align-self: flex-start;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border-bottom-left-radius: 2px;
+      background: #111827;
+    ">
+      Hi! Ask me why this exam is important and what a good score is.
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 8px; margin-top: 10px;">
+    <input
+      id="exam-chatbot-input"
+      type="text"
+      placeholder="Type your question..."
+      style="
+        flex: 1;
+        border-radius: 999px;
+        border: 1px solid #1f2937;
+        padding: 8px 12px;
+        font-size: 13px;
+        background: #020617;
+        color: #e5e7eb;
+      "
+    />
+    <button
+      id="exam-chatbot-send"
+      style="
+        border-radius: 999px;
+        border: none;
+        background: #22c55e;
+        color: #022c22;
+        padding: 8px 14px;
+        font-size: 13px;
+        cursor: pointer;
+      "
+    >
+      Send
+    </button>
+  </div>
+</div>
+<script>
+  // === CONFIGURE YOUR EXAM HERE ===
+  const EXAM_NAME = "JEE Main";
+  const WHY_THIS_EXAM_ANSWER =
+    "JEE Main is a national-level entrance exam for admission to top engineering colleges like NITs, IIITs, and serves as the qualifying exam for JEE Advanced. It tests your understanding of Physics, Chemistry, and Mathematics and opens doors to many central and state-level engineering institutes.";
+
+  const GOOD_SCORE_ANSWER =
+    "A 'good score' in JEE Main depends on your target college. Generally, scoring around 93–95 percentile or above gives you a chance for NITs, while 98+ percentile is considered excellent for top NIT branches. Cut-offs change every year based on difficulty and competition.";
+
+  // === SIMPLE CHATBOT LOGIC ===
+  const msgBox = document.getElementById("exam-chatbot-messages");
+  const input = document.getElementById("exam-chatbot-input");
+  const sendBtn = document.getElementById("exam-chatbot-send");
+
+  function addMessage(text, from = "bot") {
+    const div = document.createElement("div");
+    div.style.maxWidth = "80%";
+    div.style.padding = "8px 10px";
+    div.style.borderRadius = "12px";
+    div.style.fontSize = "13px";
+    div.style.whiteSpace = "pre-wrap";
+
+    if (from === "user") {
+      div.style.alignSelf = "flex-end";
+      div.style.background = "#2563eb";
+      div.style.color = "#f9fafb";
+      div.style.borderBottomRightRadius = "2px";
+    } else {
+      div.style.alignSelf = "flex-start";
+      div.style.background = "#111827";
+      div.style.color = "#e5e7eb";
+      div.style.borderBottomLeftRadius = "2px";
+    }
+
+    div.textContent = text;
+    msgBox.appendChild(div);
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
+
+  function getBotReply(message) {
+    const m = message.toLowerCase();
+
+    // Check for "why this exam"
+    if (
+      m.includes("why this exam") ||
+      m.includes("why should i write") ||
+      m.includes("why should i take") ||
+      m.includes("purpose of this exam")
+    ) {
+      return WHY_THIS_EXAM_ANSWER;
+    }
+
+    // Check for "good score"
+    if (
+      m.includes("good score") ||
+      m.includes("what is a good score") ||
+      m.includes("score is good") ||
+      m.includes("what score is good")
+    ) {
+      return GOOD_SCORE_ANSWER;
+    }
+
+    // Fallback answer
+    return `I can help mainly with:\n- Why ${EXAM_NAME} is important\n- What a good score in ${EXAM_NAME} means\n\nTry asking: "Why this exam?" or "What is a good score?"`;
+  }
+
+  function handleSend() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user");
+    input.value = "";
+
+    const reply = getBotReply(text);
+    setTimeout(() => addMessage(reply, "bot"), 300);
+  }
+
+  sendBtn.addEventListener("click", handleSend);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSend();
+    }
+  });
 </script>
-<!--End of Tawk.to Script--> 
+
 </body>
 </html>
 
