@@ -335,7 +335,7 @@ h1 {
 .checklist-item input {
   cursor: pointer;
 }
-/* Account section (right side of top bar) */
+/* Account section */
 .account-section {
   display: flex;
   align-items: center;
@@ -369,6 +369,29 @@ h1 {
     justify-content: center;
   }
 }
+
+/* Chatbot container at bottom */
+#exam-chatbot {
+  max-width: 420px;
+  margin: 20px auto 40px;
+  border-radius: 16px;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
+}
+#exam-chatbot-messages {
+  background: radial-gradient(circle at top left, #1e293b, #020617);
+  border-radius: 12px;
+  padding: 10px;
+  height: 220px;
+  overflow-y: auto;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 </style>
 </head>
 <body>
@@ -393,27 +416,24 @@ h1 {
       <button class="pill-btn active" id="btnAll">All Exams</button>
       <button class="pill-btn" id="btnMy">My Exams</button>
     </div>
-    <!-- Account section -->
     <div class="account-section" id="accountSection"></div>
   </div>
 </div>
 
 <h1 id="sectionTitle">All Exams</h1>
 
-<!-- All Exams Section -->
 <div class="section active" id="allSection">
   <div class="grid" id="allGrid"></div>
 </div>
 
-<!-- My Exams Section -->
 <div class="section" id="mySection">
   <div class="grid" id="myGrid"></div>
 </div>
 
 <script>
-// Exams data for ONLY the selected exams.
+// ================= CORE EXAM EXPLORER CODE (unchanged logic) =================
 const exams = [
-  ["JEE Main", "engineering", "jee-main.jpg", "jee-main2.html", "2026-01-15", "Open", "2025-12-20"],
+  ["JEE Main", "engineering", "jee-main.jpg", "jee-main2.html", "2026-01-15", "Open",     "2025-12-20"],
   ["JEE Advanced", "engineering", "jee-advanced.png", "jee-adv.html", "2026-05-26", "Upcoming", "2026-04-30"],
   ["BITSAT", "engineering", "bitsat.png", "bitsat.html", "2026-05-10", "Upcoming", "2026-04-15"],
   ["VITEEE", "engineering", "vitee.jpg", "viteee.html", "2026-04-20", "Upcoming", "2026-03-30"],
@@ -465,7 +485,6 @@ function getStorageKeysForUser(user) {
   };
 }
 
-// initial load of keys and data for current user
 let currentUser = getCurrentUser();
 let keys = getStorageKeysForUser(currentUser);
 let myExams = JSON.parse(localStorage.getItem(keys.myExamsKey) || "[]");
@@ -490,7 +509,6 @@ function renderAccountSection() {
     const logoutLink = document.getElementById("logoutLink");
     if (logoutLink) {
       logoutLink.addEventListener("click", () => {
-        // only clear current user flag; keep data keys [web:4][web:9][web:160]
         localStorage.removeItem(CURRENT_USER_KEY);
         location.reload();
       });
@@ -518,7 +536,6 @@ function formatCategory(key, rawCategory) {
   return rawCategory || "Others";
 }
 
-// All Exams
 function renderAllCards(targetGrid, list) {
   targetGrid.innerHTML = "";
   list.forEach((exam, index) => {
@@ -548,7 +565,7 @@ function renderAllCards(targetGrid, list) {
         <span class="countdown">Registration closes in ${regDays} days</span>
       </div>
       <div class="button-row">
-        <a href="${link}" class="button-link">View Details</a>
+        <a href="${link}" class="button-link exam-view-link" data-exam="${name}">View Details</a>
         <button class="button-add ${stored ? "added" : ""}">
           ${stored ? "Added ✓" : "Add to My Exams"}
         </button>
@@ -564,11 +581,19 @@ function renderAllCards(targetGrid, list) {
       toggleMyExam(name, addBtn);
     });
 
+    // when clicking view details, set chatbot exam
+    const viewLink = card.querySelector(".exam-view-link");
+    viewLink.addEventListener("click", (e) => {
+      // if you still want navigation, remove preventDefault
+      e.preventDefault();
+      setChatbotExam(name);
+      window.location.href = link;
+    });
+
     targetGrid.appendChild(card);
   });
 }
 
-// checklist
 const defaultSteps = [
   "Create account / sign up",
   "Fill application form",
@@ -598,7 +623,6 @@ function setCircleProgress(circleEl, percent) {
   circleEl.style.background = `conic-gradient(#22c55e ${degrees}deg, #e5e7eb 0deg)`;
 }
 
-// My Exams
 function renderMyCards(targetGrid, list) {
   targetGrid.innerHTML = "";
   list.forEach((exam, index) => {
@@ -652,7 +676,7 @@ function renderMyCards(targetGrid, list) {
         </div>
       </div>
       <div class="button-row">
-        <a href="${link}" class="button-link">View Details</a>
+        <a href="${link}" class="button-link exam-view-link" data-exam="${name}">View Details</a>
         <button class="button-add added">Added ✓</button>
       </div>
     `;
@@ -681,6 +705,13 @@ function renderMyCards(targetGrid, list) {
           ? "All the very best for your exam (TEAM EXAMIFY). For further queries, contact : Aditya Bagewadi : 782980957 (Anytime, Anywhere)"
           : "";
       });
+    });
+
+    const viewLink = card.querySelector(".exam-view-link");
+    viewLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      setChatbotExam(name);
+      window.location.href = link;
     });
 
     targetGrid.appendChild(card);
@@ -743,7 +774,6 @@ function renderMySection() {
   renderMyCards(myGrid, filtered);
 }
 
-// Tab switching
 btnAll.addEventListener("click", () => {
   btnAll.classList.add("active");
   btnMy.classList.remove("active");
@@ -767,7 +797,6 @@ btnMy.addEventListener("click", () => {
 categorySelect.addEventListener("change", applyFilters);
 searchInput.addEventListener("input", applyFilters);
 
-// Live countdown updater for "days to exam"
 function updateCountdowns() {
   const now = new Date();
   document.querySelectorAll(".countdown[data-exam-date]").forEach(el => {
@@ -783,43 +812,25 @@ function updateCountdowns() {
   });
 }
 
-// Initial render
 renderAccountSection();
 renderAllSection();
 renderMySection();
-
-// Start countdown after cards exist
 updateCountdowns();
 setInterval(updateCountdowns, 1000);
-</script>
- <div id="exam-chatbot" style="
-  max-width: 420px;
-  margin: 20px auto;
-  border-radius: 16px;
-  background: #0f172a;
-  color: #e5e7eb;
-  padding: 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  box-shadow: 0 18px 40px rgba(15,23,42,0.55);
-">
+
+// ================== SHARED EXAM ASSISTANT CHATBOT ==================
+
+const msgBox = document.createElement("div");
+const chatbotContainer = document.createElement("div");
+chatbotContainer.id = "exam-chatbot";
+chatbotContainer.innerHTML = `
   <h3 style="margin-top: 0; font-size: 18px; color: #38bdf8;">
     Exam Assistant
   </h3>
   <p style="font-size: 13px; color: #9ca3af; margin-bottom: 10px;">
-    Ask: “Why this exam?” or “What is a good score?” for this exam.
+    Ask: "Why this exam?" or "What courses does this exam offer?".
   </p>
-
-  <div id="exam-chatbot-messages" style="
-    background: radial-gradient(circle at top left, #1e293b, #020617);
-    border-radius: 12px;
-    padding: 10px;
-    height: 220px;
-    overflow-y: auto;
-    font-size: 13px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  ">
+  <div id="exam-chatbot-messages">
     <div style="
       align-self: flex-start;
       padding: 8px 10px;
@@ -827,10 +838,9 @@ setInterval(updateCountdowns, 1000);
       border-bottom-left-radius: 2px;
       background: #111827;
     ">
-      Hi! Ask me why this exam is important and what a good score is.
+      Hi! Select an exam and ask why it is important or what courses it offers.
     </div>
   </div>
-
   <div style="display: flex; gap: 8px; margin-top: 10px;">
     <input
       id="exam-chatbot-input"
@@ -861,94 +871,255 @@ setInterval(updateCountdowns, 1000);
       Send
     </button>
   </div>
-</div>
-<script>
-  // === CONFIGURE YOUR EXAM HERE ===
-  const EXAM_NAME = "JEE Main";
-  const WHY_THIS_EXAM_ANSWER =
-    "JEE Main is a national-level entrance exam for admission to top engineering colleges like NITs, IIITs, and serves as the qualifying exam for JEE Advanced. It tests your understanding of Physics, Chemistry, and Mathematics and opens doors to many central and state-level engineering institutes.";
+  <p style="margin-top: 8px; font-size: 11px; color: #9ca3af;">
+    Note: If this chatbot does not answer your question clearly, please contact ground support (TEAM EXAMIFY).
+  </p>
+`;
+document.body.appendChild(chatbotContainer);
 
-  const GOOD_SCORE_ANSWER =
-    "A 'good score' in JEE Main depends on your target college. Generally, scoring around 93–95 percentile or above gives you a chance for NITs, while 98+ percentile is considered excellent for top NIT branches. Cut-offs change every year based on difficulty and competition.";
+const messagesBox = document.getElementById("exam-chatbot-messages");
+const chatInput = document.getElementById("exam-chatbot-input");
+const chatSendBtn = document.getElementById("exam-chatbot-send");
 
-  // === SIMPLE CHATBOT LOGIC ===
-  const msgBox = document.getElementById("exam-chatbot-messages");
-  const input = document.getElementById("exam-chatbot-input");
-  const sendBtn = document.getElementById("exam-chatbot-send");
+let CURRENT_CHAT_EXAM = "JEE Main"; // default
 
-  function addMessage(text, from = "bot") {
-    const div = document.createElement("div");
-    div.style.maxWidth = "80%";
-    div.style.padding = "8px 10px";
-    div.style.borderRadius = "12px";
-    div.style.fontSize = "13px";
-    div.style.whiteSpace = "pre-wrap";
+function setChatbotExam(name) {
+  CURRENT_CHAT_EXAM = name;
+  addMessage(`You are now asking about: ${name}`, "bot");
+}
 
-    if (from === "user") {
-      div.style.alignSelf = "flex-end";
-      div.style.background = "#2563eb";
-      div.style.color = "#f9fafb";
-      div.style.borderBottomRightRadius = "2px";
-    } else {
-      div.style.alignSelf = "flex-start";
-      div.style.background = "#111827";
-      div.style.color = "#e5e7eb";
-      div.style.borderBottomLeftRadius = "2px";
-    }
+function addMessage(text, from = "bot") {
+  const div = document.createElement("div");
+  div.style.maxWidth = "80%";
+  div.style.padding = "8px 10px";
+  div.style.borderRadius = "12px";
+  div.style.fontSize = "13px";
+  div.style.whiteSpace = "pre-wrap";
 
-    div.textContent = text;
-    msgBox.appendChild(div);
-    msgBox.scrollTop = msgBox.scrollHeight;
+  if (from === "user") {
+    div.style.alignSelf = "flex-end";
+    div.style.background = "#2563eb";
+    div.style.color = "#f9fafb";
+    div.style.borderBottomRightRadius = "2px";
+  } else {
+    div.style.alignSelf = "flex-start";
+    div.style.background = "#111827";
+    div.style.color = "#e5e7eb";
+    div.style.borderBottomLeftRadius = "2px";
   }
 
-  function getBotReply(message) {
-    const m = message.toLowerCase();
+  div.textContent = text;
+  messagesBox.appendChild(div);
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+}
 
-    // Check for "why this exam"
-    if (
-      m.includes("why this exam") ||
-      m.includes("why should i write") ||
-      m.includes("why should i take") ||
-      m.includes("purpose of this exam")
-    ) {
-      return WHY_THIS_EXAM_ANSWER;
-    }
+// FAQ data: WHY + COURSES per exam
+function getExamFaq(examName) {
+  switch (examName) {
+    case "JEE Main":
+      return {
+        why:
+          "JEE Main is a national-level engineering entrance exam used for admission to NITs, IIITs and many GFTIs, and it also acts as the qualifying exam for JEE Advanced.",
+        courses:
+          "Through JEE Main, you can get B.Tech, B.E., B.Arch, B.Plan and some integrated science courses at NITs, IIITs and GFTIs in branches like CSE, ECE, Mechanical, Civil, Electrical and more."
+      };
+    case "JEE Advanced":
+      return {
+        why:
+          "JEE Advanced is the entrance test for admission to the Indian Institutes of Technology (IITs) and a few other premier institutes.",
+        courses:
+          "It primarily offers B.Tech, Dual Degree (B.Tech + M.Tech) and integrated MSc programs across various engineering and science branches at the IITs."
+      };
+    case "BITSAT":
+      return {
+        why:
+          "BITSAT is the entrance exam for admission to Birla Institute of Technology and Science (BITS) campuses like Pilani, Goa and Hyderabad.",
+        courses:
+          "BITSAT offers B.E. programs such as CSE, ECE, Electrical, Mechanical, Civil and Chemical, as well as B.Pharm and integrated MSc programs in disciplines like Physics, Chemistry, Mathematics, Economics and Biology."
+      };
+    case "VITEEE":
+      return {
+        why:
+          "VITEEE is held for admission to engineering programs at VIT campuses, known for good placements and industry exposure.",
+        courses:
+          "It offers B.Tech programs in streams like CSE and its specialisations, IT, ECE, EEE, Mechanical, Civil and other engineering branches."
+      };
+    case "SRMJEEE":
+      return {
+        why:
+          "SRMJEEE is the entrance test for SRM University's engineering programs, popular among students aiming for private engineering colleges.",
+        courses:
+          "It offers B.Tech programs across branches such as CSE, IT, ECE, Mechanical, Civil and other core and emerging areas."
+      };
+    case "WBJEE":
+      return {
+        why:
+          "WBJEE is a state-level entrance exam for engineering and technology colleges in West Bengal.",
+        courses:
+          "It mainly offers B.Tech and B.E. programs in branches like CSE, ECE, Mechanical, Electrical and Civil in West Bengal colleges."
+      };
+    case "MET":
+      return {
+        why:
+          "MET (Manipal Entrance Test) is conducted for admission to Manipal’s engineering and other professional programs.",
+        courses:
+          "It offers B.Tech courses in multiple branches including CSE and its specialisations, ECE, Mechanical, Mechatronics, Civil and more at Manipal campuses."
+      };
+    case "UGEE":
+      return {
+        why:
+          "UGEE is conducted by IIIT Hyderabad for research-oriented undergraduate admissions.",
+        courses:
+          "It offers research-focused dual degree programs combining B.Tech and MS in areas such as CSE, ECE and computational disciplines."
+      };
+    case "KCET":
+      return {
+        why:
+          "KCET is Karnataka’s state-level exam for engineering, agriculture and other professional courses.",
+        courses:
+          "Through KCET, students can pursue B.E./B.Tech in various engineering branches, as well as courses in agriculture, veterinary science and other allied fields at Karnataka colleges."
+      };
+    case "TS EAMCET":
+      return {
+        why:
+          "TS EAMCET is the entrance examination for engineering, agriculture and medical-allied courses in Telangana.",
+        courses:
+          "It offers B.E./B.Tech programs in engineering branches along with agriculture and pharmacy-related undergraduate courses at Telangana institutions."
+      };
+    case "COMEDK":
+      return {
+        why:
+          "COMEDK UGET is used for admission to a large number of private engineering colleges in Karnataka.",
+        courses:
+          "It primarily offers B.E./B.Tech programs in branches like CSE, ECE, Mechanical, Civil, IT and other engineering disciplines."
+      };
+    case "AP-EAMCET":
+      return {
+        why:
+          "AP EAPCET (AP-EAMCET) is Andhra Pradesh’s exam for engineering, agriculture and pharmacy courses.",
+        courses:
+          "It offers B.Tech/B.E. in various engineering branches and also provides entry to agriculture and pharmacy undergraduate programs in Andhra Pradesh."
+      };
+    case "MHTCET":
+      return {
+        why:
+          "MHT CET is the state-level entrance exam for engineering, pharmacy and related undergraduate programs in Maharashtra.",
+        courses:
+          "It offers B.E./B.Tech courses in multiple engineering branches and B.Pharm / Pharm.D programs at participating institutes in Maharashtra."
+      };
+    case "NEET UG":
+      return {
+        why:
+          "NEET UG is the single national entrance exam for undergraduate medical, dental and many allied health courses in India.",
+        courses:
+          "Clearing NEET UG can lead to MBBS, BDS, BAMS, BHMS, BUMS, BSMS, BVSc & AH, BSc Nursing and various other allied health and paramedical courses depending on rank and counselling."
+      };
+    case "CUET":
+      return {
+        why:
+          "CUET UG is used by central and many other universities for admission to a wide range of undergraduate courses.",
+        courses:
+          "It offers entry to BA, BSc, BCom, BBA, integrated programs and other UG degrees across arts, science, commerce and interdisciplinary domains depending on the university."
+      };
+    case "IAT (IISER)":
+      return {
+        why:
+          "IAT is the IISER Aptitude Test for admission to science-focused programs at IISERs.",
+        courses:
+          "It primarily offers BS-MS dual degree and related science programs in subjects like Physics, Chemistry, Biology, Mathematics and interdisciplinary sciences."
+      };
+    case "NEST":
+      return {
+        why:
+          "NEST is conducted for admission to integrated MSc programs at NISER Bhubaneswar and CEBS Mumbai.",
+        courses:
+          "It offers integrated MSc courses in basic sciences such as Physics, Chemistry, Mathematics and Biology."
+      };
+    case "NDA":
+      return {
+        why:
+          "The NDA exam is for entry into the National Defence Academy, leading to officer training in the Indian Army, Navy and Air Force.",
+        courses:
+          "Selected candidates undergo a three-year training program at NDA followed by pre-commission training at respective academies, leading to a graduation degree and commissioning as officers."
+      };
+    case "UCEED":
+      return {
+        why:
+          "UCEED is a design aptitude test for admission to undergraduate design programs at IITs and other institutes.",
+        courses:
+          "It offers B.Des programs in areas like industrial design, communication design and interaction / user experience design at participating institutes."
+      };
+    case "NATA":
+      return {
+        why:
+          "NATA is the National Aptitude Test in Architecture used by many colleges for admission to architecture programs.",
+        courses:
+          "It primarily offers entry to B.Arch (Bachelor of Architecture) and related architecture courses at participating institutions."
+      };
+    default:
+      return {
+        why:
+          "This exam provides opportunities in its respective field; always refer to the official brochure for detailed benefits.",
+        courses:
+          "Typical courses include core undergraduate programs and some integrated or professional degrees related to this exam’s domain."
+      };
+  }
+}
 
-    // Check for "good score"
-    if (
-      m.includes("good score") ||
-      m.includes("what is a good score") ||
-      m.includes("score is good") ||
-      m.includes("what score is good")
-    ) {
-      return GOOD_SCORE_ANSWER;
-    }
+function getBotReply(message, examName) {
+  const m = message.toLowerCase();
+  const faq = getExamFaq(examName);
 
-    // Fallback answer
-    return `I can help mainly with:\n- Why ${EXAM_NAME} is important\n- What a good score in ${EXAM_NAME} means\n\nTry asking: "Why this exam?" or "What is a good score?"`;
+  if (
+    m.includes("why this exam") ||
+    m.includes("why should i write") ||
+    m.includes("why should i take") ||
+    m.includes("importance") ||
+    m.includes("purpose of this exam")
+  ) {
+    return faq.why;
   }
 
-  function handleSend() {
-    const text = input.value.trim();
-    if (!text) return;
-
-    addMessage(text, "user");
-    input.value = "";
-
-    const reply = getBotReply(text);
-    setTimeout(() => addMessage(reply, "bot"), 300);
+  if (
+    m.includes("what courses") ||
+    m.includes("courses this exam offers") ||
+    m.includes("which courses") ||
+    m.includes("what course") ||
+    m.includes("offers what")
+  ) {
+    return faq.courses;
   }
 
-  sendBtn.addEventListener("click", handleSend);
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSend();
-    }
-  });
+  return `I can help mainly with:
+- Why ${examName} is important
+- What courses ${examName} offers
+
+If this does not answer your question, please contact ground support (TEAM EXAMIFY).`;
+}
+
+function handleSend() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  chatInput.value = "";
+
+  const reply = getBotReply(text, CURRENT_CHAT_EXAM);
+  setTimeout(() => addMessage(reply, "bot"), 300);
+}
+
+chatSendBtn.addEventListener("click", handleSend);
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    handleSend();
+  }
+});
+
+// default exam for chatbot at load (first in list)
+if (exams.length > 0) {
+  CURRENT_CHAT_EXAM = exams[0][0];
+}
 </script>
-
 </body>
 </html>
-
-
